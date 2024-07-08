@@ -1,0 +1,238 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "200-Actuator_low_level_control_01-actuator_low_level_velocity_control.exe"
+		},
+		{
+			"path" : "200-Actuator_low_level_control_01-actuator_low_level_velocity_control.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"add_compile_options",
+			"add_definitions",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 236,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 99,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 100,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 107,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 94,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 208,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 209,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 210,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 211,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 212,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-O3 -DNDEBUG -std=gnu++11 -fdiagnostics-color=always"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-reorder"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 4,
+					"define" : "NOMINMAX"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "_OS_WINDOWS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples/cmake-build-release"
+				},
+				{
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples/thirdParty/cxxopts"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples/kortex_api/include"
+				},
+				{
+					"backtrace" : 7,
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples/kortex_api/include/client"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples/kortex_api/include/common"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples/kortex_api/include/messages"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/\u97e9\u5c0f\u9f99/Desktop/kortex/api_cpp/examples/kortex_api/include/client_stubs"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "11"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		}
+	],
+	"id" : "200-Actuator_low_level_control_01-actuator_low_level_velocity_control::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-O3 -DNDEBUG",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 1,
+				"fragment" : "C:\\Users\\\u97e9\u5c0f\u9f99\\Desktop\\kortex\\api_cpp\\examples\\kortex_api\\lib\\release\\KortexApiCpp.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 1,
+				"fragment" : "-lwinMM",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 1,
+				"fragment" : "-lws2_32",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "200-Actuator_low_level_control_01-actuator_low_level_velocity_control",
+	"nameOnDisk" : "200-Actuator_low_level_control_01-actuator_low_level_velocity_control.exe",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "200-Actuator_low_level_control/01-actuator_low_level_velocity_control.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "utilities.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

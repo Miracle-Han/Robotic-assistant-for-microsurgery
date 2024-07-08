@@ -1,0 +1,5 @@
+"G:\Clion\CLion 2024.1.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_MAKE_PROGRAM=G:/Clion/CLion 2024.1.4/bin/ninja/win/x64/ninja.exe" -DUSE_CONAN=OFF -DDOWNLOAD_API=OFF -G Ninja -S C:\Users\韩小龙\Desktop\Example -B C:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio
+-- MSVC -> forcing use of statically-linked runtime.
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: C:/Users/韩小龙/Desktop/Example/cmake-build-release-visual-studio

@@ -1,0 +1,6 @@
+"G:\Clion\CLion 2024.1.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=G:/Clion/CLion 2024.1.4/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\韩小龙\Desktop\Example -B C:\Users\韩小龙\Desktop\Example\cmake-build-debug
+Kortex API was not downloaded prior to running CMake.
+CMake Error at CMakeLists.txt:123 (message):
+
+
+-- Configuring incomplete, errors occurred!
