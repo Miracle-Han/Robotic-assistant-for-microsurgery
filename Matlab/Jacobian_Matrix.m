@@ -19,13 +19,21 @@ d7 = -(0.1059+0.0615);
 
 % 定义关节角度
 %                                                                                                                                                        
-q1 = 1.245226;
-q2 = -1.014591;
-q3 = -1.626709;
-q4 = 1.306197;
-q5 = -0.040284;
-q6 = 0.686400;
-q7 = -1.036441;
+% q1 = 1.245226;
+% q2 = -1.014591;
+% q3 = -1.626709;
+% q4 = 1.306197;
+% q5 = -0.040284;
+% q6 = 0.686400;
+% q7 = -1.036441;
+
+q1 = 6.28317
+q2 = 0.261908
+q3 = 3.14163
+q4 = 4.01427
+q5 = 2.56234e-05
+q6 = 0.95994
+q7 = 1.57077
 
 DH_params = [
     pi/2  0  d1  q1;
@@ -83,6 +91,23 @@ for i = 1:num_joints
     J(4:6, i) = z_vectors(:, i);
 end
 
+Pseudo_J = (J' * inv(J * J'));
+
 % 显示Jacobian矩阵
 disp('Jacobian Matrix:');
 disp(J);
+
+% 显示Pseudo_Jacobian矩阵
+disp('Pseudo_Jacobian Matrix:');
+disp(Pseudo_J);
+
+%% Using SVD
+%svd
+[U,S,V] = svd(J); 
+T=S;
+T(find(S~=0)) = 1./S(find(S~=0));
+svdInvJ = V * T' * U';
+
+% 显示SVD_Pseudo_Jacobian矩阵
+disp('SVD_Pseudo_Jacobian Matrix:');
+disp(svdInvJ);
