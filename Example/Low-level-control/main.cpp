@@ -29,7 +29,12 @@
 #include <google/protobuf/util/json_util.h>
 
 #include "utilities.h"
-
+#include "Jacobian.h"
+#include <Eigen/Dense>
+#include "Constants.h"
+#include "ForwardKinematic.h"
+#include "InverseKinematic.h"
+#include "Trajectory.h"
 
 #if defined(_MSC_VER)
 #include <Windows.h>
@@ -145,6 +150,19 @@ void example_move_to_home_position(k_api::Base::BaseClient* base)
     }
 }
 
+// // 将弧度转换为角度的函数
+// float radToDeg(float rad)
+// {
+//     return rad * 180.0 / M_PI;
+// }
+//
+// // 将角度转换为弧度的函数
+// float degToRad(float deg)
+// {
+//     return deg;
+// }
+
+
 bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, k_api::BaseCyclic::BaseCyclicClient* base_cyclic)
 {
     bool return_status = true;
@@ -163,16 +181,24 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
     auto servoingMode = k_api::Base::ServoingModeInformation();
 
-    int timer_count = 0;
     int64_t now = 0;
     int64_t last = 0;
 
     int timeout = 0;
 
 
+
     std::cout << "Initializing the arm for velocity low-level control example" << std::endl;
     try
     {
+
+        ForwardKinematic fk;
+        InverseKinematic ik;
+        Trajectory traj;
+        Jacobian jacobian;
+
+        double MicrosecondToSeconds = 1000000.0f;
+
         // Set the base in low-level servoing mode
         servoingMode.set_servoing_mode(k_api::Base::ServoingMode::LOW_LEVEL_SERVOING);
         base->SetServoingMode(servoingMode);
@@ -185,8 +211,54 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         {
             commands.push_back(base_feedback.actuators(i).position());
             base_command.add_actuators()->set_position(base_feedback.actuators(i).position());
-            std::cout << "actuator " << i << " position = " << base_feedback.actuators(i).position() << std::endl;
+
+            // 读取每个actuator的位置信息-Degree
+            std::cout << "actuator " << i+1 << " position = " << commands[i] << std::endl;
+
         }
+
+        // degree to radian
+        std::vector<float> commands_rad;
+        for (const auto& angle: commands) {
+            commands_rad.push_back(angle * M_PI / 180.0);
+        }
+        std::cout << "actuator in radian: " << std::endl;
+        for (size_t i = 0; i < commands_rad.size(); ++i) {
+            std::cout << "actuator " << i+1 << " position in radian = " << commands_rad[i] << std::endl;
+        }
+
+        // creat forwardkinematic class
+
+        // 计算并输出正向运动学结果
+        Eigen::Matrix4d T_final = fk.computeForwardKinematics(commands_rad);
+        std::cout << "---------------------------------------------------------" << std::endl;
+        std::cout << "Initial(home position) Homogeneous Transformation Matrix:" << std::endl;
+        std::cout << T_final << std::endl;
+
+        // 定义目标姿态
+
+        double position_X = 0.6f;
+        double position_Y = -0.2f;
+        double position_Z = 0.6f;
+
+        double orientationX = M_PI/2.0f;
+        double orientationY = M_PI/3.0f;
+        double orientationZ = M_PI/3.0f;
+
+        Eigen::Matrix3d RotationMatrix = fk.computeRotationMatrix(orientationX,orientationY,orientationZ);
+
+        // 创建齐次变换矩阵 target_pose
+        Eigen::Matrix4d target_pose = Eigen::Matrix4d::Identity(); // 初始化为单位矩阵
+        // 设置旋转矩阵部分
+        target_pose.block<3,3>(0,0) = RotationMatrix;
+        // 设置位移部分
+        target_pose(0,3) = position_X;
+        target_pose(1,3) = position_Y;
+        target_pose(2,3) = position_Z;
+
+        // std::vector<float> solution = ik.solveInverseKinematics(commands_rad, target_pose, 100, 1e-3).joint_angles;
+
+        bool isConvergedAndWithLimit = ik.solveInverseKinematics(commands_rad, target_pose, 100, 1e-3).is_converged;
 
         // Define the callback function used in Refresh_callback
         auto lambda_fct_callback = [](const Kinova::Api::Error &err, const k_api::BaseCyclic::Feedback data)
@@ -199,46 +271,195 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         };
 
 
+        time_duration = 10.0f;
+        Eigen::Matrix<double, 1, 6> Final_pose;
+        Final_pose << position_X, position_Y, position_Z, orientationX, orientationY, orientationZ;
+
+        //
+        float t0 =0.0f;
+        float T = time_duration;
+        Eigen::MatrixXd para_matrix = traj.TrajectoryGeneration(T_final, Final_pose, t0, T);
+        Eigen::MatrixXd para_matrix_velocity = para_matrix.block<6,5>(0,1);
+
+        int64_t initial_time = GetTickUs();
+
+        // 创建Jacobian类的实例
+        now = GetTickUs();
+
+        //
+        double t_running = (now-initial_time)/MicrosecondToSeconds;
+        double t_0;
+
+        // 前一次更新关节值的时刻，用于计算两次迭代之间的delta time
+        double t_running_last = 0.0f;
+
+        // Jacobian 矩阵
+        Eigen::MatrixXd jacobian_matrix;
+        Eigen::MatrixXd pseudo_inverse_jacobian_matrix;
+
+        Eigen::Matrix4d current_FK;
+        Eigen::Matrix3d current_Rotation;
+        Eigen::Matrix3d Target_Rotation;
+
+        // 时间矩阵
+        Eigen::VectorXd time_matrix(6);
+
+        // 当前位置
+        Eigen::VectorXd current_pose_interploration(6);
+
+        // 速度矩阵
+        Eigen::VectorXd V_ee(6);
+
+        // 用于计算频率，周期内迭代了多少次：Hz = iteration number / time duration
+        int iteration_number = 0;
+
         // Real-time loop
-        while(timer_count < (time_duration * 1000))
+        while((t_running < T) && isConvergedAndWithLimit)
         {
             now = GetTickUs();
-            if(now - last > 1000)
+            if(last == 0) {
+                now = abs(now);
+            }else {
+                t_running = (now-initial_time)/MicrosecondToSeconds;
+            }
+
+            if(now - last > 1000)  // 1ms  1毫秒
             {
+                std::cout << "---------------" <<std::endl;
+                std::cout << "Total Running time is: " << t_running <<std::endl;
+
+                t_0 = t_running;
+
+
+                // 计算Jacobian 和 伪逆Jacobian
+                jacobian_matrix = jacobian.computeJacobian(commands_rad);
+                pseudo_inverse_jacobian_matrix = jacobian.computePseudoInverse(jacobian_matrix);
+
+                // int64_t test_now = GetTickUs();
+                // double test_for_calculate = (test_now-initial_time)/MicrosecondToSeconds;
+                // std::cout << "Jacobian Running time is: " << test_for_calculate-t_running <<std::endl;
+
+
+                // 时间矩阵
+                time_matrix << 1, t_0, std::pow(t_0, 2), std::pow(t_0, 3), std::pow(t_0, 4), std::pow(t_0, 5);
+                //
+                // test_now = GetTickUs();
+                // test_for_calculate = (test_now-initial_time)/MicrosecondToSeconds;
+                // std::cout << "time matrix Running time is: " << test_for_calculate-t_running <<std::endl;
+
+                // 计算Forward Kinematic, 用于计算error
+
+                current_FK = fk.computeForwardKinematics(commands_rad);
+                current_Rotation = current_FK.block<3, 3>(0, 0);
+
+
+                // std::cout << "current_FK" << std::endl;
+                // std::cout << current_FK << std::endl;
+
+                current_pose_interploration = para_matrix*time_matrix;
+                Target_Rotation = fk.computeRotationMatrix(current_pose_interploration(3, 0),current_pose_interploration(4, 0),current_pose_interploration(5, 0));
+
+                //
+                // std::cout << "current_pose_inter" << std::endl;
+                // std::cout << current_pose_interploration << std::endl;
+
+                Eigen::Matrix3d rotation_error_matrix = Target_Rotation * current_Rotation.transpose();
+                Eigen::AngleAxisd rotation_error_angle_axis(rotation_error_matrix);
+                Eigen::Vector3d rotation_error = rotation_error_angle_axis.angle() * rotation_error_angle_axis.axis();
+
+                // 定义 error 列向量，大小为 6x1
+                Eigen::VectorXd error(6);
+
+                // 计算误差
+                error(0) = current_pose_interploration(0, 0) - current_FK(0, 3);
+                error(1) = current_pose_interploration(1, 0) - current_FK(1, 3);
+                error(2) = current_pose_interploration(2, 0) - current_FK(2, 3);
+                error(3) = rotation_error(0,0);
+                error(4) = rotation_error(1,0);
+                error(5) = rotation_error(2,0);
+                //
+                // std::cout << "error" << std::endl;
+                // std::cout << error << std::endl;
+
+                // 速度矩阵
+                // V_ee = para_matrix_velocity * time_matrix.head(5);
+
+                // test_now = GetTickUs();
+                // test_for_calculate = (test_now-initial_time)/MicrosecondToSeconds;
+                // std::cout << "Vee matrix Running time is: " << test_for_calculate-t_running <<std::endl;
+                //
+
+                now = GetTickUs();
+                double delta_time;
+                if(last == 0) {
+                    delta_time = (now-initial_time)/MicrosecondToSeconds;
+                }
+                else {
+                    delta_time = t_running - t_running_last;
+                }
+                // std::cout << "delta time is = " << delta_time << std'8::endl;
+
+                // std::cout<< "V_ee * delta_time" << std::endl;
+                // std::cout<< V_ee * delta_time << std::endl;
+
+
+                Eigen::VectorXd delta_q(7);
+                delta_q = pseudo_inverse_jacobian_matrix * (error);
+
+                // std::cout << "delta_q = " << delta_q << std::endl;
+
+                // test_now = GetTickUs();
+
                 for(int i = 0; i < actuator_count; i++)
                 {
-                    // Move only the last actuator to prevent collision
-        		    if(i == actuator_count - 1)
-        		    {
-                        commands[i] += (0.001f * velocity);
-        		        base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                    delta_q[i] = delta_q[i] * 180.0f/M_PI;
+                    // std::cout << "test 3:" << std::endl;
+                    if (abs(delta_q[i])<1e-6) {
+                        delta_q[i] = 0.0f;
+                    }
 
-        		        // base_command.mutable_actuators(i)->set_velocity(6.0f);
+                    commands[i] = delta_q[i] + commands[i];
+                    base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
 
-        		        auto feedback = base_cyclic->RefreshFeedback();
-        		        std::cout << "------- time = " << now << " -------" << std::endl;
-        		        std::cout << "Position of actuator 6: " << feedback.actuators(6).position() << std::endl;
-        		        std::cout << "end_actuator_position_command = " << commands[i] << std::endl;
-        		        std::cout << "Velocity of actuator 6: " << feedback.actuators(6).velocity() << std::endl;
-        		        std::cout << std::endl;
-
-        		    }
+                    // 输出每个actuator的位置信息-Degree
+                    // std::cout << "actuator " << i << " position = " << commands[i] << std::endl;
+                    commands_rad[i] = commands[i]*M_PI/180;
                 }
+                //
+                // test_for_calculate = (GetTickUs()-test_now)/MicrosecondToSeconds;
+                // std::cout << "Actuator moveing Running time is: " << test_for_calculate <<std::endl;
+                //
 
                 try
                 {
                     base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
-
                 }
                 catch(...)
                 {
                     timeout++;
                 }
 
-                timer_count++;
                 last = GetTickUs();
+                t_running_last = t_running;
+                iteration_number ++;
             }
         }
+
+        std::cout << "interation number = " << iteration_number <<std::endl;
+
+        // 计算正向运动学
+        std::cout << "actuator in radian: " << std::endl;
+        for (size_t i = 0; i < commands_rad.size(); ++i) {
+            std::cout << "actuator " << i << " position in radian = " << commands_rad[i] << std::endl;
+        }
+
+        Eigen::Matrix4d T_final2 = fk.computeForwardKinematics(commands_rad);
+        // 输出正向运动学的齐次变换矩阵
+        std::cout << "---------------------------------------------------------" << std::endl;
+        std::cout << "Final Homogeneous Transformation Matrix:" << std::endl;
+        std::cout << T_final2 << std::endl;
+
+
     }
     catch (k_api::KDetailedException& ex)
     {
