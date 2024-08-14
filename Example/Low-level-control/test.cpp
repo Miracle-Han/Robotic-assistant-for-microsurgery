@@ -6,10 +6,13 @@
 #include <numeric>
 #include <fstream>
 #include <stdlib.h>
+#include <deque>
+
 
 #define portname "COM11"
-#define baudrate 9600
+#define baudrate 460800
 #define alpha 0.3       // for low-level filter
+int FrequencyofFC = 8333;  // 120hz
 
 int64_t GetTickUs()
 {
@@ -28,7 +31,16 @@ int64_t GetTickUs()
 #endif
 }
 
-
+double butterworth_filter(const std::vector<double>& b, const std::vector<double>& a, std::deque<double>& x, std::deque<double>& y) {
+    double output = b[0] * x.back();
+    for (size_t i = 1; i < b.size(); ++i) {
+        output += b[i] * x[x.size() - 1 - i];
+    }
+    for (size_t i = 1; i < a.size(); ++i) {
+        output -= a[i] * y[y.size() - i];
+    }
+    return output;
+}
 
 int main() {
     string port_name = portname; // 可以根据实际情况调整
@@ -127,42 +139,77 @@ int main() {
 
         int iteration_num = 1;
 
+        std::vector<double> b = {4.1655e-04f, 0.0012f, 0.0012f, 4.1655e-04f};
+        std::vector<double> a = {1.0f, -2.68615f, 2.4197f, -0.7302f};
+
+        int64_t temp = GetTickUs();
+        int64_t now;
+
+
+        vector<int> values = serialReader.readLineAsIntArray();
+        values = serialReader.readLineAsIntArray();
+
+        // 初始化存储每个传感器的窗口
+        std::vector<std::deque<double>> x_windows(values.size());
+        std::vector<std::deque<double>> y_windows(values.size());
+
+
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < b.size(); j++ ) {
+                x_windows[i].push_back(static_cast<double>(LC0[i]));
+            }
+
+            for (int j = 0; j < a.size(); j++ ) {
+                y_windows[i].push_back(LC0[i]); // 初始化输出窗口
+            }
+        }
+
         while (true) {
-            vector<int> values = serialReader.readLineAsIntArray();
             int64_t current_t = GetTickUs();
 
-            while ((current_t - initial_time)/MicrosecondToSeconds > 1.0) {
+            now = GetTickUs();
+
+            while ((current_t - initial_time) / MicrosecondToSeconds > 1.0) {
                 values = serialReader.readLineAsIntArray();
-                if (!values.empty()) {
-                    LC = {values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7]};
+                temp = now;
+                now = GetTickUs();
+
+                while (now - temp <= FrequencyofFC) {
+                    now = GetTickUs();
                 }
-
-                std::vector<double> LC_zscore(LC.size());
-                for (size_t i = 0; i < LC.size(); ++i) {
-                    LC_zscore[i] = LC[i] - LC0[i];
-                }
-
-                double x33 = -std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM2.begin(), 0.0);
-                double y33 = std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM1.begin(), 0.0);
-
-                // 滤波计算
-                double x = x3_pre + (x33 - x3_pre) * alpha;
-                double y = y3_pre + (y33 - y3_pre) * alpha;
 
                 current_t = GetTickUs();
-                dataFile << "Total Running time for itertaion "<< iteration_num <<" is: " << (current_t - initial_time)/MicrosecondToSeconds  << endl;
+                dataFile << "Total Running time for iteration " << iteration_num << " is: " << (current_t - initial_time) / MicrosecondToSeconds << endl;
 
-                // 更新前一状态
-                x3_pre = x;
-                y3_pre = y;
+                for (int i = 0; i < values.size(); i++) {
 
-                // std::cout << "----------------------------------------" << std::endl;
-                // std::cout << "Filtered x3: " << x << std::endl;
-                // std::cout << "Filtered y3: " << y << std::endl;
+                    // 添加新值到输入信号窗口
+                    x_windows[i].push_back(static_cast<double>(values[i]));
+                    if (x_windows[i].size() >= b.size()) {
+                        x_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
+                    }
 
-                dataFile << "X position is  "<< x << "; ";
-                dataFile << "Y position is  "<< y << "; ";
-                dataFile << endl;;     // 写入数据
+
+                    // 应用巴特沃斯滤波器
+                    double y_filtered = butterworth_filter(b, a, x_windows[i], y_windows[i]);
+
+
+                    // 添加到输出信号窗口
+                    y_windows[i].push_back(y_filtered);
+                    if (y_windows[i].size() >= a.size()) {
+                        y_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
+                    }
+
+                    // std::cout << "Sensor " << i << " is " << values[i] << endl;
+                    // std::cout << "Filtered Sensor " << i << " is " << y_filtered << endl;
+
+                    // 写入原始和滤波后的数据到文件
+                    dataFile << "Sensor " << i << " is " << values[i] << "; ";
+                    dataFile << "Filtered Sensor " << i << " is " << y_filtered << "; ";
+                    dataFile << endl;
+
+                }
 
                 iteration_num++;
             }
