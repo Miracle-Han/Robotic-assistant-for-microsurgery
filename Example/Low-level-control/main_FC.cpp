@@ -73,10 +73,12 @@ namespace k_api = Kinova::Api;
 #define alpha 0.3       // for low-level filter
 #define gamma 0.02     // Position Mapping coefficient
 
-float velocity = 30.0f;         // Default velocity of the actuator (degrees per seconds)
+float velocity = 20.0f;         // Default velocity of the actuator (degrees per seconds)
 float time_duration = DURATION; // Duration of the example (seconds)
 double MicrosecondToSeconds = 1000000.0f;  // Unit conversion, microseconds to seconds
-int Frequency = 400;           // Hz
+int Frequency = 1000;           // Hz
+
+
 
 
 std::mutex data_mutex;
@@ -209,7 +211,7 @@ void sensorDataThread() {
     // Unmixing Matrix
     constexpr std::array<double, 8> UM1 = {-0.2, 0.2, 0, 0, 0, 0, 0, 0};
     constexpr std::array<double, 8> UM2 = {0, 0, 0.15, -0.15, 0.15, -0.15, 0, 0};
-    constexpr std::array<double, 8> UM3 = {0, 0, 0, 0, 0, 0, -0.2, 0.2};
+    constexpr std::array<double, 8> UM3 = {0, 0, 0, 0, 0, 0, -0.05, 0.05};
     constexpr std::array<double, 8> UM4 = {0, -0.01, -0.3, 0.3, 0.25, -0.3, 0.08, -0.05};
 
     // Butterworth filter coefficient
@@ -224,6 +226,7 @@ void sensorDataThread() {
     std::array<double, 8> LC;
     double x3_pre = 0.0;
     double y3_pre = 0.0;
+    double z3_pre = 0.0;
 
     int64_t initial_time = GetTickUs();
 
@@ -326,35 +329,42 @@ void sensorDataThread() {
 
             double x33 = -std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM2.begin(), 0.0);
             double y33 = std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM1.begin(), 0.0);
+            double z33 = std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM3.begin(), 0.0);
 
             // 滤波计算
-            double new_x = gamma * (x3_pre + (x33 - x3_pre) * alpha);
+            double new_x = gamma * x33;
             double new_y = gamma * y33;
-            double new_z = 0;
+            double new_z = gamma * z33;
 
             // 判断当前 x 的值与前一次的值差别是否不超过 0.02
-            if (std::abs(new_x - x3_pre) <= 0.02) {
-                new_x = x3_pre;  // 如果差别不超过 0.02，当前值等于前一次的值
+            if (std::abs(new_x - x3_pre) >= 0.02) {
+                {
+                    std::lock_guard<std::mutex> lock(data_mutex);
+                    x = new_x;
+                    sensor_position_update = true;
+                }
+                x3_pre = new_x;  // 如果差别不超过 0.02，当前值等于前一次的值
+            }
+
+            // 判断当前 y 的值与前一次的值差别是否不超过 0.02
+            if (std::abs(new_y - y3_pre) >= 0.02) {
+                {
+                    std::lock_guard<std::mutex> lock(data_mutex);
+                    y = new_y;
+                    sensor_position_update = true;
+                }
+                y3_pre = new_y;  // 如果差别不超过 0.02，当前值等于前一次的值
             }
 
             // 判断当前 x 的值与前一次的值差别是否不超过 0.02
-            if (std::abs(new_y - y3_pre) <= 0.02) {
-                new_y = y3_pre;  // 如果差别不超过 0.02，当前值等于前一次的值
+            if (std::abs(new_z - z3_pre) >= 0.02) {
+                {
+                    std::lock_guard<std::mutex> lock(data_mutex);
+                    z = new_z;
+                    sensor_position_update = true;
+                }
+                z3_pre = new_z;  // 如果差别不超过 0.02，当前值等于前一次的值
             }
-
-            {
-                std::lock_guard<std::mutex> lock(data_mutex);
-                y = new_y;
-                z = new_z;
-                sensor_position_update = true;
-            }
-
-
-
-            // 更新前一状态
-            x3_pre = x;
-            y3_pre = y;
-
         }
     }
     catch (std::exception& e)
@@ -366,209 +376,6 @@ void sensorDataThread() {
 /*********************************************
  * Thread 2: Calculate Position by New Pose *
  ********************************************/
-bool moveingtohomeposition = false;
-bool positionisupdate = false;
-Eigen::VectorXd delta_q = Eigen::VectorXd::Zero(7);
-
-
-void PositionCalculateThread(k_api::Base::BaseClient* base, k_api::BaseCyclic::BaseCyclicClient* base_cyclic)
-{
-    while(true) {
-        while(moveingtohomeposition) {
-            // k_api::BaseCyclic::ActuatorFeedback actuator_feedback;
-            k_api::BaseCyclic::Feedback base_feedback;
-            k_api::BaseCyclic::Command  base_command;
-
-            // Creat Class for Kinematic, Trajectory design, Jacobian Calculation
-            ForwardKinematic fk;
-            InverseKinematic ik;
-            Trajectory traj;
-            Jacobian jacobian;
-
-            // Actuator data
-            std::vector<float> commands = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-            // Actuator data in radians
-            std::vector<float> commands_rad = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-
-            auto servoingMode = k_api::Base::ServoingModeInformation();
-
-            // Define Target pose
-            double position_X;
-            double position_Y;
-            double position_Z;
-
-            double orientationX;
-            double orientationY;
-            double orientationZ;
-
-            //  Create a homogeneous transformation matrix for Target Pose
-            // Target Pose: Matrix form
-            Eigen::Matrix4d target_pose = Eigen::Matrix4d::Identity(); // 初始化为单位矩阵
-
-            // Jacobian matrix
-            Eigen::MatrixXd jacobian_matrix;
-            Eigen::MatrixXd pseudo_inverse_jacobian_matrix;
-
-            // Kinematic Calculation
-            Eigen::Matrix4d T_Home_position;
-            Eigen::Matrix4d current_FK;  // current homogeneous transformation matrix
-            Eigen::Matrix3d Target_Rotation;
-
-            // Actuator Incresement
-            std::vector<float> solution;
-            bool isConvergedAndWithLimit = true;
-
-            try
-            {
-                // Set the base in low-level servoing mode
-                servoingMode.set_servoing_mode(k_api::Base::ServoingMode::LOW_LEVEL_SERVOING);
-                base->SetServoingMode(servoingMode);
-                base_feedback = base_cyclic->RefreshFeedback();
-
-                int actuator_count = base->GetActuatorCount().count();
-
-                while(moveingtohomeposition) {
-                    // Actuator data
-                    for(int i = 0; i < actuator_count; i++)
-                    {
-                        commands[i] = base_feedback.actuators(i).position();
-                        std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
-                    }
-                    // degree to radian
-                    for (int i = 0; i < actuator_count; i++) {
-                        commands_rad[i] = commands[i] * M_PI / 180.0;
-                    }
-
-                    // Calculate forward kinematics
-                    T_Home_position = fk.computeForwardKinematics(commands_rad);
-
-
-                    bool local_LC0_ready = false;
-                    // 进入实时控制
-                    while (true) {
-
-                        {
-                            std::lock_guard<std::mutex> lock(data_mutex);
-                            local_LC0_ready = LC0_ready;
-                        }
-                        double Local_position_x;
-                        while (local_LC0_ready) {
-                            // std::cout << "sensor_position_update: " << sensor_position_update << std::endl;
-                            if(sensor_position_update) {
-                                int j = 1;
-                                int point_num = 1;
-
-                                {
-                                    std::lock_guard<std::mutex> lock(data_mutex);
-                                    Local_position_x = y;
-                                }
-                                sensor_position_update = false;
-
-                                while (j<point_num+1) {
-                                    {
-                                        // Define Target pose
-                                        position_X = T_Home_position(0,3)+(Local_position_x*j*1/point_num);
-                                        // +(Local_position_x*j*1/point_num)
-                                        position_Y = T_Home_position(1,3);
-                                        position_Z = T_Home_position(2,3);
-
-                                        orientationX = M_PI/2.0f;
-                                        orientationY = 0;
-                                        orientationZ = M_PI/2.0f;
-
-                                        // std::cout << "x position is : " << T_Home_position(0,3)+(Local_position_x*j*1/point_num) << std::endl;
-                                    }
-
-
-                                    // Position part
-                                    target_pose(0,3) = position_X;
-                                    target_pose(1,3) = position_Y;
-                                    target_pose(2,3) = position_Z;
-
-                                    std::cout << "target_pose_x = " <<  target_pose(0,3) << std::endl;
-
-                                    // Orientation part
-                                    Eigen::Matrix3d RotationMatrix = fk.computeRotationMatrix(orientationX,orientationY,orientationZ);
-                                    target_pose.block<3,3>(0,0) = RotationMatrix;
-
-                                    // Final Pose: vector form
-                                    Eigen::Matrix<double, 1, 6> Final_pose;
-                                    Final_pose << position_X, position_Y, position_Z, orientationX, orientationY, orientationZ;
-
-
-                                    // 获取当前关节值用于计算delta q
-                                    for(int i = 0; i < actuator_count; i++)
-                                    {
-                                        base_feedback = base_cyclic->RefreshFeedback();
-                                        commands[i] = base_feedback.actuators(i).position();
-                                        base_command.add_actuators()->set_position(base_feedback.actuators(i).position());
-                                        // std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
-                                    }
-
-                                    // degree to radian
-                                    for (int i = 0; i < actuator_count; i++) {
-                                        commands_rad[i] = commands[i] * M_PI / 180.0;
-                                    }
-
-                                    solution = commands_rad;
-
-
-                                    Eigen::Matrix4d T_final = fk.computeForwardKinematics(commands_rad);
-                                    // // Output the homogeneous transformation matrix of the forward kinematics
-                                    // std::cout << "---------------------------------------------------------" << std::endl;
-                                    std::cout << "Current X position is : " << T_final(0,3) << std::endl;
-                                    // std::cout << T_final << std::endl;
-
-
-                                    // Determine whether the Target pose has an inverse kinematics solution
-                                    isConvergedAndWithLimit = ik.solveInverseKinematics(commands_rad, target_pose, 100, 1e-4).is_converged;
-                                    if(isConvergedAndWithLimit) {
-                                        solution = ik.solveInverseKinematics(commands_rad, target_pose, 100, 1e-4).joint_angles;
-                                    }
-
-                                    {
-                                        std::lock_guard<std::mutex> lock(data_mutex);
-                                        if(abs(target_pose(0,3)-T_final(0,3))>=0.001) {
-                                            for (int i = 0; i < actuator_count; i++) {
-                                                // Actuator data
-                                                delta_q[i] = 10*((solution[i] - commands_rad[i]) * 180.0f / M_PI);
-                                                std::cout << "delta_q "<< i << ": " << delta_q[i] << std::endl;
-                                            }
-                                        }else {
-                                            for (int i = 0; i < actuator_count; i++) {
-                                                // Actuator data
-                                                delta_q[i] = 0.0f;
-                                            }
-                                        }
-
-                                        positionisupdate = true;
-
-                                        // std::cout <<"position is update" << std::endl;
-                                    }
-                                    j++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (k_api::KDetailedException& ex)
-            {
-                std::cout << "Kortex error: " << ex.what() << std::endl;
-            }
-            catch (std::runtime_error& ex2)
-            {
-                std::cout << "Runtime error: " << ex2.what() << std::endl;
-            }
-        }
-    }
-}
-
-
-/*********************************************
- * Thread 3: COntrol Mode *
- ********************************************/
-
 void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, k_api::BaseCyclic::BaseCyclicClient* base_cyclic)
 {
     // Move arm to ready position
@@ -578,21 +385,49 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
     k_api::BaseCyclic::Feedback base_feedback;
     k_api::BaseCyclic::Command  base_command;
 
+    auto servoingMode = k_api::Base::ServoingModeInformation();
+
+    // Creat Class for Kinematic, Trajectory design, Jacobian Calculation
+    ForwardKinematic fk;
+    InverseKinematic ik;
+    Jacobian jacobian;
+
     // Actuator data
     std::vector<float> commands = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     // Actuator data in radians
     std::vector<float> commands_rad = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    std::vector<float> Target_Actuator_value = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
-    auto servoingMode = k_api::Base::ServoingModeInformation();
+    Eigen::VectorXd delta_q = Eigen::VectorXd::Zero(7);
+    Eigen::VectorXd error(6);
+    Eigen::Matrix3d rotation_error_matrix;
+    Eigen::Vector3d rotation_error;
 
 
-    int64_t last = 0;
+    // Jacobian matrix
+    Eigen::MatrixXd jacobian_matrix;
+    Eigen::MatrixXd pseudo_inverse_jacobian_matrix;
+
+    // Kinematic Calculation
+    Eigen::Matrix4d T_Home_position;
+    Eigen::Matrix4d current_FK;  // current homogeneous transformation matrix
+    Eigen::Matrix3d current_Rotation;
+    Eigen::Matrix3d Target_Rotation;
+
+
+
+    //
+    double x_velocity = 0.5f;
+    double y_velocity = 0.5f;
+    double z_velocity = 0.5f;
+
+    double x_position;
+    double y_position;
+    double z_position;
+
+
     int timeout = 0;
 
-    {
-        std::lock_guard<std::mutex> lock(data_mutex);
-        moveingtohomeposition = true;
-    }
 
     std::cout << "Initializing the arm for velocity low-level control example" << std::endl;
     try
@@ -617,6 +452,10 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
             commands_rad[i] = commands[i] * M_PI / 180.0;
         }
 
+        T_Home_position = fk.computeForwardKinematics(commands_rad);
+
+        Target_Rotation = T_Home_position.block<3, 3>(0, 0);
+
         // Define the callback function used in Refresh_callback
         auto lambda_fct_callback = [](const Kinova::Api::Error &err, const k_api::BaseCyclic::Feedback data)
         {
@@ -627,60 +466,228 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
             // std::cout << serialized_data << std::endl << std::endl;
         };
 
-        Eigen::VectorXd local_delta_q = Eigen::VectorXd::Zero(7);
+        int64_t initial_time = GetTickUs();
+        int64_t now = initial_time;
         int64_t temp = 0;
+
+
+        double t_running = (now-initial_time)/MicrosecondToSeconds;
+        double delta_t;
+
+        bool local_positionisupdate = false;
+
 
         // 进入实时控制
         while (true) {
-            bool local_positionisupdate = false;
-            Eigen::VectorXd error_q = Eigen::VectorXd::Zero(7);
-            while (LC0_ready) {
+            {
+                std::lock_guard<std::mutex> lock(data_mutex);
+                local_positionisupdate = sensor_position_update;
+                sensor_position_update = false;
+            }
+
+            if(local_positionisupdate) {
+                local_positionisupdate = false;
+
+                base_feedback = base_cyclic->RefreshFeedback();
+                // Actuator data
+                for(int i = 0; i < actuator_count; i++)
+                {
+                    commands[i] = base_feedback.actuators(i).position();
+                    // base_command.add_actuators()->set_position(base_feedback.actuators(i).position());
+                    // std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
+                }
+                // degree to radian
+                for (int i = 0; i < actuator_count; i++) {
+                    commands_rad[i] = commands[i] * M_PI / 180.0;
+                }
+                current_FK = fk.computeForwardKinematics(commands_rad);
                 {
                     std::lock_guard<std::mutex> lock(data_mutex);
-                    local_positionisupdate = positionisupdate;
-                    positionisupdate = false;
+                    x_position = y+T_Home_position(0,3);
+                    y_position = x+T_Home_position(1,3);
+                    z_position = z+T_Home_position(2,3);
                 }
 
-                if(local_positionisupdate) {
-                    local_positionisupdate = false;
-                    // local_delta_q += delta_q;
-                    for(int i = 0; i < actuator_count; i++) {
+
+
+                initial_time = GetTickUs();
+                t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
+
+
+                while(abs(current_FK(0,3)-x_position)>=0.001 || abs(current_FK(1,3)-y_position)>=0.001 || abs(current_FK(2,3)-z_position)>=0.001) {
+
+                    // std::cout << "Running time is : " << t_running <<std::endl;
+
+                    {
                         std::lock_guard<std::mutex> lock(data_mutex);
-                        local_delta_q[i] = delta_q[i];
-
-                        // error_q[i] = delta_q[i];
-                        // std::cout << "local_delta_q "<< i << ": " << local_delta_q[i] << std::endl;
+                        local_positionisupdate = sensor_position_update;
                     }
-                }
+                    if(local_positionisupdate) {
+                        break;
+                    }
 
-                int64_t now = abs(GetTickUs());
 
-                if(abs(now - temp) > 2000)
-                {
-                    temp = abs(now);
-                    // std::cout << "test" << std::endl;
+                    base_feedback = base_cyclic->RefreshFeedback();
+                    // Actuator data
                     for(int i = 0; i < actuator_count; i++)
                     {
-                        if(local_delta_q[i] >= 0.001f * velocity) {   // 0.001*20 = 0.02
-                            commands[i] += (0.001f * velocity);
-                            local_delta_q[i] = local_delta_q[i] - 0.001f * velocity;
-                            base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                        commands[i] = base_feedback.actuators(i).position();
+                        // std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
+                    }
+                    // degree to radian
+                    for (int i = 0; i < actuator_count; i++) {
+                        commands_rad[i] = commands[i] * M_PI / 180.0;
+                    }
+                    //
+                    current_FK = fk.computeForwardKinematics(commands_rad);
+                    current_Rotation = current_FK.block<3, 3>(0, 0);
+
+                    rotation_error_matrix = Target_Rotation * current_Rotation.transpose();
+                    Eigen::AngleAxisd rotation_error_angle_axis(rotation_error_matrix);
+                    rotation_error = rotation_error_angle_axis.angle() * rotation_error_angle_axis.axis();
+
+
+                    //
+                    jacobian_matrix = jacobian.computeJacobian(commands_rad);
+                    pseudo_inverse_jacobian_matrix = jacobian.computePseudoInverse(jacobian_matrix);
+                    //
+                    delta_t = (GetTickUs()-initial_time)/MicrosecondToSeconds - t_running;
+
+                    // std::cout << "delta_t is : " <<delta_t <<std::endl;
+
+                    // X position
+                    if(abs(current_FK(0,3)-x_position)>=0.001) {
+                        if (x_position>=current_FK(0,3)) {
+                            error(0) = x_velocity*(delta_t);
+                        }else {
+                            error(0) = -x_velocity*(delta_t);
                         }
-                        else if(local_delta_q[i] <= -0.001f * velocity) {
-                            commands[i] -= (0.001f * velocity);
-                            local_delta_q[i] = local_delta_q[i] + 0.001f * velocity;
-                            base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                    }else {
+                        error(0) = 0.0f;
+                    }
+
+                    // Y position
+                    if(abs(current_FK(1,3)-y_position)>=0.001) {
+                        if (y_position>=current_FK(1,3)) {
+                            error(1) = y_velocity*(delta_t);
+                        }else {
+                            error(1) = -y_velocity*(delta_t);
                         }
-                        else {
-                            // commands[i] = commands[i]+local_delta_q[i];
-                            // local_delta_q[i] = 0.0f;
+                    }else {
+                        error(1) = 0.0f;
+                    }
+
+                    // Z position
+                    if (abs(current_FK(2,3)-z_position)>=0.001) {
+                        if (z_position>=current_FK(2,3)) {
+                            error(2) = z_velocity*(delta_t);
+                        }else {
+                            error(2) = -z_velocity*(delta_t);
+                        }
+                    }else {
+                        error(2) = 0.0f;
+                    }
+
+                    //
+
+                    // std::cout << "Z-position error: " << T_Home_position(2,3) - current_FK(2,3)<< std::endl;
+
+                    error(3) = rotation_error(0,0);
+                    error(4) = rotation_error(1,0);
+                    error(5) = rotation_error(2,0);
+
+                    delta_q = pseudo_inverse_jacobian_matrix * (error);
+
+                    for(int i = 0; i < actuator_count; i++)
+                    {
+                        delta_q[i] = delta_q[i] * 180.0f/M_PI;
+                        if (abs(delta_q[i])<1e-6) {
+                            delta_q[i] = 0.0f;
                         }
 
-                        // base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
-                        // if(i == 0) {
-                        //     std::cout << "local_delta_q " << i << ": " << local_delta_q[i] << std::endl;
-                        //     std::cout << "commands " << i << ": " << commands[i] << std::endl;
-                        // }
+                        commands[i] = delta_q[i] + commands[i];
+                        // std::cout << "test commands " <<commands[i]<< std::endl;
+                    }
+
+                    // degree to radian
+                    for (int i = 0; i < actuator_count; i++) {
+                        Target_Actuator_value[i] = commands[i] * M_PI / 180.0;
+                    }
+
+                    if(!ik.solveInverseKinematics(commands_rad, fk.computeForwardKinematics(Target_Actuator_value), 100, 1e-4).is_converged) {
+                        break;
+                    }
+
+                    // std::cout << "test3333333333333333" << std::endl;
+                    //
+                    now = abs(GetTickUs());
+
+                    while(abs(now - temp) < (MicrosecondToSeconds / Frequency)) {
+                        now = abs(GetTickUs());
+                    }
+
+                    // std::cout << "================================"<< std::endl;
+                    // std::cout << "X Target Position: " << x_position << std::endl;
+                    // std::cout << "X Current Position: " << current_FK(0,3)<< std::endl;
+
+                    temp = now;
+
+                    // std::cout << "test44444444444444" << std::endl;
+                    // Update Actuator position value
+                    for(int i = 0; i < actuator_count; i++)
+                    {
+                        base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                    }
+                    //
+                    // std::cout << "test555555555555" << std::endl;
+                    try
+                    {
+                        base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
+                    }
+                    catch(...)
+                    {
+                        timeout++;
+                    }
+                    // std::cout << "test666666666666" << std::endl;
+
+                    // now = abs(GetTickUs());
+                    // if(abs(now - temp) > (MicrosecondToSeconds / Frequency))  // Different Frequency 1000hz
+                    // {
+                    //     // std::cout << abs(now - temp) <<std::endl;
+                    //     temp = abs(now);
+                    //
+                    //     // Update Actuator position value
+                    //     for(int i = 0; i < actuator_count; i++)
+                    //     {
+                    //         if(i == actuator_count - 1)
+                    //         {
+                    //             commands[i] += (0.001f * velocity);
+                    //             base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                    //         }
+                    //     }
+                    //
+                    //     try
+                    //     {
+                    //         base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
+                    //     }
+                    //     catch(...)
+                    //     {
+                    //         timeout++;
+                    //     }
+                    // }
+                    t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
+                }
+            }else {
+                now = abs(GetTickUs());
+                if(abs(now - temp) > (MicrosecondToSeconds / Frequency))  // Different Frequency 1000hz
+                {
+                    temp = abs(now);
+
+                    // Update Actuator position value
+                    for(int i = 0; i < actuator_count; i++)
+                    {
+                        // std::cout << "test" << std::endl;
+                        base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
                     }
                     try
                     {
@@ -690,9 +697,9 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     {
                         timeout++;
                     }
-                    last = GetTickUs();
                 }
             }
+
         }
     }
     catch (k_api::KDetailedException& ex)
@@ -744,12 +751,10 @@ int main(int argc, char **argv)
     std::thread ForceSensor_thread(sensorDataThread);
     // Controller
     std::thread control_thread(example_actuator_low_level_velocity_control, base, base_cyclic);
-    // Delta_position calculate
-    std::thread PositionCalculate_thread(PositionCalculateThread, base, base_cyclic);
 
     ForceSensor_thread.join();
     control_thread.join();
-    PositionCalculate_thread.join();
+
 
 
     // Close API session
