@@ -26,7 +26,7 @@ Eigen::Matrix4d ForwardKinematic::computeForwardKinematics(const std::vector<flo
         throw std::invalid_argument("Exactly 7 joint angles are required");
     }
 
-    // 定义 DH 矩阵
+    // Defining the DH matrix
     std::vector<std::vector<float>> DH_params = {
         {M_PI, 0.0, D0, 0.0},
         {M_PI / 2, 0.0, D1, joint_angles[0]},
@@ -38,10 +38,10 @@ Eigen::Matrix4d ForwardKinematic::computeForwardKinematics(const std::vector<flo
         {M_PI, 0.0, D7, joint_angles[6] + M_PI}
     };
 
-    // 初始化变换矩阵
+    // Initialize the transformation matrix
     Eigen::Matrix4d T_final_handbook = Eigen::Matrix4d::Identity();
 
-    // 计算每个关节的变换矩阵并进行连乘
+    // The transformation matrix of each joint is calculated and multiplied
     for (size_t i = 0; i < DH_params.size(); ++i) {
         float alpha = DH_params[i][0];
         float a = DH_params[i][1];
@@ -62,19 +62,21 @@ Eigen::Matrix3d ForwardKinematic::computeRotationMatrix(const double & orientati
     Eigen::Matrix3d RotationOfY;
     Eigen::Matrix3d RotationOfX;
 
-    // 计算绕Z轴的旋转矩阵
+
+    // Fixed angle method: XYZ
+    // Calculate the rotation matrix about the Z axis
     RotationOfZ <<
         cos(orientationZ), -sin(orientationZ), 0,
         sin(orientationZ),  cos(orientationZ), 0,
         0,                 0,                 1;
 
-    // 计算绕Y轴的旋转矩阵
+    // Calculate the rotation matrix about the Y axis
     RotationOfY <<
         cos(orientationY), 0, sin(orientationY),
         0,                1, 0,
         -sin(orientationY), 0, cos(orientationY);
 
-    // 计算绕X轴的旋转矩阵
+    // Calculate the rotation matrix about the X axis
     RotationOfX <<
         1, 0,                 0,
         0, cos(orientationX), -sin(orientationX),
