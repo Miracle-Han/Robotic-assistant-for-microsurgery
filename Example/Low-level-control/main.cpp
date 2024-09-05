@@ -334,10 +334,6 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         int iteration_number_for_calcu = iteration_number;
 
 
-        string filename = R"(F:\Imperial College London\FYP_Data\Point2Point\Target6.txt)";
-        ofstream dataFile;
-        dataFile.open(filename);
-
 
 
         // Real-time loop
@@ -411,7 +407,6 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
             // std::cout << now <<std::endl;
             if(abs(now - temp) > (MicrosecondToSeconds / Frequency))  // Different Frequency 1000hz
             {
-                dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;     // 写入数据
                 // std::cout << abs(now - temp) <<std::endl;
                 temp = abs(now);
 
@@ -432,13 +427,7 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                 for(int i = 0; i < actuator_count; i++)
                 {
                     commands_temp.push_back(base_feedback.actuators(i).position());
-                    // 读取每个actuator的位置信息-Degree
-                    dataFile << "Actuator  "<< i+1 << " : " << commands_temp[i] * M_PI / 180.0 << "; ";     // 写入数据
-
-
                 }
-
-                dataFile << endl;;     // 写入数据
 
                 try
                 {
@@ -456,9 +445,7 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         }
 
 
-        std::cout << "interation number = " << iteration_number <<std::endl;
-        dataFile.close();
-        // Computational forward kinematics
+        // Computational forward kinematics of current FK when stop movement
         std::cout << "actuator in radian: " << std::endl;
         for (size_t i = 0; i < commands_rad.size(); ++i) {
             std::cout << "actuator " << i+1 << " position in radian = " << commands_rad[i] << std::endl;
