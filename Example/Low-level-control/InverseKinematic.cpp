@@ -8,7 +8,7 @@
 #include "ForwardKinematic.h"
 
 
-// 定义关节位置限制
+// Define joint angle limits  (degree)
 const std::vector<std::pair<float, float>> joint_limits = {
     {-INFINITY, INFINITY}, // Actuator 1
     {-128.9f, 128.9f},     // Actuator 2
@@ -20,19 +20,19 @@ const std::vector<std::pair<float, float>> joint_limits = {
 };
 
 Eigen::VectorXd InverseKinematic::computeError(const Eigen::Matrix4d& current_pose, const Eigen::Matrix4d& target_pose) {
-    // 计算位置误差
+    // Calculated position error
     Eigen::Vector3d current_position = current_pose.block<3, 1>(0, 3);
     Eigen::Vector3d target_position = target_pose.block<3, 1>(0, 3);
     Eigen::Vector3d position_error = target_position - current_position;
 
-    // 计算旋转误差（使用旋转矩阵）
+    // Calculate rotation error (using rotation matrix)
     Eigen::Matrix3d current_rotation = current_pose.block<3, 3>(0, 0);
     Eigen::Matrix3d target_rotation = target_pose.block<3, 3>(0, 0);
     Eigen::Matrix3d rotation_error_matrix = target_rotation * current_rotation.transpose();
     Eigen::AngleAxisd rotation_error_angle_axis(rotation_error_matrix);
     Eigen::Vector3d rotation_error = rotation_error_angle_axis.angle() * rotation_error_angle_axis.axis();
 
-    // 组合位置和旋转误差
+    // Combined position and rotation error
     Eigen::VectorXd error(6);
     error.head<3>() = position_error;
     error.tail<3>() = rotation_error;
@@ -47,17 +47,18 @@ IKResult InverseKinematic::solveInverseKinematics(const std::vector<float>& init
 
     std::vector<float> joint_angles = initial_joint_angles;
 
-    // 检查并调整第 2 个元素（索引 1）
+    // Check joint angle limition
+    // Check Joint 2
     if (joint_angles[1]*180/M_PI > 180.0f) {
         joint_angles[1] -= 2*M_PI;
     }
 
-    // 检查并调整第 4 个元素（索引 3）
+    // heck Joint 4
     if (joint_angles[3]*180/M_PI > 180.0f) {
         joint_angles[3] -= 2*M_PI;
     }
 
-    // 检查并调整第 6 个元素（索引 5）
+    // heck Joint 6
     if (joint_angles[5]*180/M_PI > 180.0f) {
         joint_angles[5] -= 2*M_PI;
     }
@@ -70,30 +71,29 @@ IKResult InverseKinematic::solveInverseKinematics(const std::vector<float>& init
         Eigen::Matrix4d current_pose = fk.computeForwardKinematics(joint_angles);
         Eigen::VectorXd error = computeError(current_pose, target_pose);
 
-        // 计算雅可比矩阵
+        // Calculate the Jacobian matrix
         Eigen::MatrixXd J = jacobian.computeJacobian(joint_angles);
 
-        // 计算雅可比矩阵的伪逆
+        // Calculate the Pseudo-Inverse Jacobian matrix
         Eigen::MatrixXd J_pseudo_inverse = jacobian.computePseudoInverse(J);
 
-        // 计算关节角度的更新量
+        // The amount of increasement of joint Angle is calculated
         Eigen::VectorXd delta_theta = J_pseudo_inverse * error;
 
-        // 更新关节角度并应用限制
+        // Update joint angles and apply limits
         for (size_t j = 0; j < joint_angles.size(); ++j) {
             joint_angles[j] += delta_theta(j);
         }
 
-        // 检查误差是否在容忍范围内
+        // Check whether the error is within tolerance
         if (error.norm() < tolerance) {
-            std::cout << "Converged in " << i + 1 << " iterations." << std::endl;
+            // std::cout << "Converged in " << i + 1 << " iterations." << std::endl;
             is_converged = true;
             break;
         }
-
     }
 
-    // 检查并应用关节位置限制/
+    // Check and apply joint position restrictions
     for (size_t j = 0; j < joint_angles.size(); ++j) {
         if ((joint_angles[j]* 180.0f/M_PI) < joint_limits[j].first || (joint_angles[j]* 180.0f/M_PI) > joint_limits[j].second) {
             std::cout << "Joint " << j+1 << " exceeded its limits." << std::endl;
@@ -103,6 +103,23 @@ IKResult InverseKinematic::solveInverseKinematics(const std::vector<float>& init
 
     if (!is_converged) {
         std::cout << "Did not converge within the maximum number of iterations." << std::endl;
+    }
+
+    if (is_converged && is_within_limits) {
+        // Check Joint 2
+        if (joint_angles[1] < 0.0f) {
+            joint_angles[1] += 2*M_PI;
+        }
+
+        // Check Joint 4
+        if (joint_angles[3] < 0.0f) {
+            joint_angles[3] += 2*M_PI;
+        }
+
+        // Check Joint 6
+        if (joint_angles[5] < 0.0f) {
+            joint_angles[5] += 2*M_PI;
+        }
     }
 
     return {joint_angles, is_converged && is_within_limits};
