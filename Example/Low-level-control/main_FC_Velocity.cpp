@@ -71,7 +71,7 @@ namespace k_api = Kinova::Api;
 #define portname "COM11"
 #define baudrate 460800
 #define alpha 0.3       // for low-level filter
-#define gamma 0.02      // Position Mapping coefficient
+#define gamma 0.02      // Position-to-Velocity Mapping coefficient
 
 float velocity = 20.0f;         // Default velocity of the actuator (degrees per seconds)
 float time_duration = DURATION; // Duration of the example (seconds)
@@ -182,7 +182,7 @@ void example_move_to_home_position(k_api::Base::BaseClient* base)
 
 
 /*********************************************
- * First Order Low-Pass Filter: butterworth_filter
+ * First Order Low-Pass Filter: butterworth_filter *
  * Cut-Off Frequency: 1.5Hz;  Sampling Frequency: 120Hz
  ********************************************/
 
@@ -303,92 +303,77 @@ void sensorDataThread() {
             }
         }
 
-        int iteration_num_FC = 1;
-        string filename = R"(F:\Imperial College London\FYP_Data\VelocityMapping\testforFC.txt)";
-        ofstream dataFile;
-        dataFile.open(filename);
 
-        initial_time = GetTickUs();
-
-        int64_t current_t = GetTickUs();
-
+        // Real-time Control, read sensor data in real-time
         while (true) {
             values = serialReader.readLineAsIntArray();
 
-            current_t = GetTickUs();
-            dataFile << "Total Running time for iteration " << iteration_num_FC << " is: " << (current_t - initial_time) / MicrosecondToSeconds << endl;
-
-
             for (int i = 0; i < values.size(); i++) {
-                // 添加新值到输入信号窗口
+
+                // Deassign
                 x_windows[i].push_back(static_cast<double>(values[i]));
                 if (x_windows[i].size() >= b.size()) {
-                    x_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
+                    x_windows[i].pop_front();
                 }
 
-                // 应用巴特沃斯滤波器
+                // Apply Filter
                 double y_filtered = butterworth_filter(b, a, x_windows[i], y_windows[i]);
 
 
-                // 添加到输出信号窗口
+                // Deassign
                 y_windows[i].push_back(y_filtered);
                 if (y_windows[i].size() >= a.size()) {
-                    y_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
+                    y_windows[i].pop_front();
                 }
 
                 LC[i] = y_filtered;
             }
+
             std::vector<double> LC_zscore(LC.size());
             for (size_t i = 0; i < LC.size(); ++i) {
                 LC_zscore[i] = LC[i] - LC0[i];
             }
 
+            // Position = unmixing matrix * (LC - LC0)
             double x33 = -std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM2.begin(), 0.0);
             double y33 = std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM1.begin(), 0.0);
             double z33 = std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM3.begin(), 0.0);
 
-            // 滤波计算
+            // Position-to-Velocity Mapping, multiply it by a coefficient
             double new_x = gamma * x33;
             double new_y = gamma * y33;
             double new_z = 0.5*gamma * z33;
 
-            // 判断当前 x 的值与前一次的值差别是否不超过 0.02
+            // Same like filter, avoid small change of values, to avoid Jerk
             if (std::abs(new_x - x3_pre) >= 0.02) {
                 {
                     std::lock_guard<std::mutex> lock(data_mutex);
                     x = new_x;
                     sensor_position_update = true;
                 }
-                x3_pre = new_x;  // 如果差别不超过 0.02，当前值等于前一次的值
+                x3_pre = new_x;
             }
 
-            // 判断当前 y 的值与前一次的值差别是否不超过 0.02
+            // Same like filter, avoid small change of values, to avoid Jerk
             if (std::abs(new_y - y3_pre) >= 0.02) {
                 {
                     std::lock_guard<std::mutex> lock(data_mutex);
                     y = new_y;
                     sensor_position_update = true;
                 }
-                y3_pre = new_y;  // 如果差别不超过 0.02，当前值等于前一次的值
+                y3_pre = new_y;
             }
 
-            // 判断当前 x 的值与前一次的值差别是否不超过 0.02
+            // Same like filter, avoid small change of values, to avoid Jerk
             if (std::abs(new_z - z3_pre) >= 0.02) {
                 {
                     std::lock_guard<std::mutex> lock(data_mutex);
                     z = new_z;
                     sensor_position_update = true;
                 }
-                z3_pre = new_z;  // 如果差别不超过 0.02，当前值等于前一次的值
+                z3_pre = new_z;
             }
 
-            dataFile << "X position is " << y << "; ";
-            dataFile << "Y position is " << x << "; ";
-            dataFile << "Z position is " << z << "; ";
-
-            dataFile << endl;
-
-            iteration_num_FC++;
         }
     }
     catch (std::exception& e)
@@ -418,10 +403,12 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
     // Actuator data
     std::vector<float> commands = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+
     // Actuator data in radians
     std::vector<float> commands_rad = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     std::vector<float> Target_Actuator_value = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
+    //
     Eigen::VectorXd delta_q = Eigen::VectorXd::Zero(7);
     Eigen::VectorXd error(6);
     Eigen::Matrix3d rotation_error_matrix;
@@ -440,7 +427,7 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
 
 
-    //
+    // Initial velocity of each-axis of end-effector
     double x_velocity = 0.0f;
     double y_velocity = 0.0f;
     double z_velocity = 0.0f;
@@ -469,15 +456,15 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         {
             commands[i] = base_feedback.actuators(i).position();
             base_command.add_actuators()->set_position(base_feedback.actuators(i).position());
-            std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
+            // std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;  // Print Joint angles
         }
         // degree to radian
         for (int i = 0; i < actuator_count; i++) {
             commands_rad[i] = commands[i] * M_PI / 180.0;
         }
 
+        // Current Forward Kinematic
         T_Home_position = fk.computeForwardKinematics(commands_rad);
-
         Target_Rotation = T_Home_position.block<3, 3>(0, 0);
 
         // Define the callback function used in Refresh_callback
@@ -490,35 +477,39 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
             // std::cout << serialized_data << std::endl << std::endl;
         };
 
+
         int64_t initial_time = GetTickUs();
         int64_t now = initial_time;
         int64_t temp = 0;
 
 
+        // dt
         double t_running = (now-initial_time)/MicrosecondToSeconds;
         double delta_t;
 
+
+        // Receive bool value of global variable: sensor_position_update
         bool local_positionisupdate = false;
 
-        string filename = R"(F:\Imperial College London\FYP_Data\VelocityMapping\testforPosition.txt)";
-        ofstream dataFile;
-        dataFile.open(filename);
-        int iteration_number = 1;
 
+        // Calculate Endeff_Velocity by: V = J*q_dot, using for data analysis
         Eigen::Matrix<double, 6, 7> jacobian_matrix_temp;
         Eigen::Matrix<double, 7, 1> Joint_Velocity;
         Eigen::Matrix<double, 6, 1> Endeff_Velocity;
-
-
         std::vector<float> Command_temp= {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+
+
+        // Real-time Control loop for receive update foot interface position
         while (true) {
 
+            // Mutex
             {
                 std::lock_guard<std::mutex> lock(data_mutex);
                 local_positionisupdate = sensor_position_update;
                 sensor_position_update = false;
             }
 
+            // when foot interface position update, deassign value of velocity of end-effector
             if(local_positionisupdate) {
                 local_positionisupdate = false;
                 {
@@ -533,6 +524,8 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
             initial_time = GetTickUs();
             t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
 
+
+            // Real-time Control loop for send commands to Actuator
             while(true) {
 
                 {
@@ -545,28 +538,25 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
                 base_feedback = base_cyclic->RefreshFeedback();
 
-                // // Actuator data
-                // for(int i = 0; i < actuator_count; i++)
-                // {
-                //     commands[i] = base_feedback.actuators(i).position();
-                // }
-
                 // degree to radian
                 for (int i = 0; i < actuator_count; i++) {
                     commands_rad[i] = commands[i] * M_PI / 180.0;
                 }
-                current_FK = fk.computeForwardKinematics(commands_rad);
 
+
+                current_FK = fk.computeForwardKinematics(commands_rad);
                 current_Rotation = current_FK.block<3, 3>(0, 0);
+
 
                 rotation_error_matrix = Target_Rotation * current_Rotation.transpose();
                 Eigen::AngleAxisd rotation_error_angle_axis(rotation_error_matrix);
                 rotation_error = rotation_error_angle_axis.angle() * rotation_error_angle_axis.axis();
 
+
                 jacobian_matrix = jacobian.computeJacobian(commands_rad);
                 pseudo_inverse_jacobian_matrix = jacobian.computePseudoInverse(jacobian_matrix);
 
-
+                // dt
                 delta_t = (GetTickUs()-initial_time)/MicrosecondToSeconds - t_running;
 
                 if (abs(x_velocity) <= 0.05) {
@@ -576,7 +566,7 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     x_velocity = 0.3;
                 }
                 error(0) = x_velocity * delta_t;
-                // std::cout << "Error 0: " << x_velocity << std::endl;
+
 
                 if (abs(y_velocity) <= 0.05) {
                     y_velocity = 0;
@@ -585,7 +575,7 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     y_velocity = 0.3;
                 }
                 error(1) = y_velocity * delta_t;
-                // std::cout << "Error 1: " << y_velocity << std::endl;
+
 
                 if (abs(z_velocity) <= 0.05) {
                     z_velocity = 0;
@@ -594,18 +584,18 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     z_velocity = 0.3;
                 }
                 error(2) = z_velocity * delta_t;
-                // std::cout << "Error 2: " << z_velocity << std::endl;
 
+
+                // Only mapping for position, error(3-5) are orientation part
                 error(3) = rotation_error(0,0);
-                // std::cout << "Error 3: " << error(3) << std::endl;
                 error(4) = rotation_error(1,0);
-                // std::cout << "Error 4: " << error(4) << std::endl;
                 error(5) = rotation_error(2,0);
-                // std::cout << "Error 5: " << error(5) << std::endl;
 
-
+                // Joint Increasement
                 delta_q = pseudo_inverse_jacobian_matrix * (error);
 
+
+                // if out of physical limition, then stop and break out of "Real-time Control loop for send commands to Actuator"
                 // degree to radian
                 for (int i = 0; i < actuator_count; i++) {
                     Target_Actuator_value[i] = (delta_q[i] * 180.0f/M_PI + commands[i]) * M_PI / 180.0;
@@ -615,6 +605,8 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     break;
                 }
 
+
+                // Update new joint angles, joint angles = commands
                 for(int i = 0; i < actuator_count; i++)
                 {
                     delta_q[i] = delta_q[i] * 180.0f/M_PI;
@@ -623,8 +615,6 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     }
 
                     commands[i] = delta_q[i] + commands[i];
-                    // std::cout << "Actuator " << i << " values: " << delta_q[i] << std::endl;
-                    // std::cout << "test commands " <<commands[i]<< std::endl;
                 }
 
 
@@ -634,22 +624,16 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     now = abs(GetTickUs());
                 }
 
-                dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;     // 写入数据
-
                 temp = now;
 
                 // std::cout << "========================="  << std::endl;
                 for(int i = 0; i < actuator_count; i++)
                 {
                     base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
-                    dataFile << "Actuator  "<< i+1 << " : " << commands[i] * M_PI / 180.0 << "; ";     // 写入数据
-
                     Command_temp[i] = commands[i] * M_PI / 180.0;
-
                     Joint_Velocity[i] = base_feedback.actuators(i).velocity();
                 }
 
-                dataFile << endl;    // 写入数据
 
                 try
                 {
@@ -660,17 +644,11 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     timeout++;
                 }
 
-                jacobian_matrix_temp = jacobian.computeJacobian(Command_temp);
 
+                // Calculate end-effector velocity based on Jacobian*joint velocity
+                jacobian_matrix_temp = jacobian.computeJacobian(Command_temp);
                 Endeff_Velocity = jacobian_matrix * Joint_Velocity;
 
-                for(int i = 0; i < 6; i++)
-                {
-                    dataFile << "endeffector velocity "<< i+1 << " : " << Endeff_Velocity[i] << "; ";
-                }
-                dataFile << endl;
-
-                iteration_number ++;
                 t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
             }
         }
