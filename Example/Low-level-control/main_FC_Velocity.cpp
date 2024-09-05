@@ -71,7 +71,7 @@ namespace k_api = Kinova::Api;
 #define portname "COM11"
 #define baudrate 460800
 #define alpha 0.3       // for low-level filter
-#define gamma 0.02     // Position Mapping coefficient
+#define gamma 0.02      // Position Mapping coefficient
 
 float velocity = 20.0f;         // Default velocity of the actuator (degrees per seconds)
 float time_duration = DURATION; // Duration of the example (seconds)
@@ -181,6 +181,11 @@ void example_move_to_home_position(k_api::Base::BaseClient* base)
 }
 
 
+/*********************************************
+ * First Order Low-Pass Filter: butterworth_filter
+ * Cut-Off Frequency: 1.5Hz;  Sampling Frequency: 120Hz
+ ********************************************/
+
 double butterworth_filter(const std::vector<double>& b, const std::vector<double>& a, std::deque<double>& x, std::deque<double>& y) {
     double output = b[0] * x.back();
     for (size_t i = 1; i < b.size(); ++i) {
@@ -203,9 +208,8 @@ bool LC0_ready = false;
 
 void sensorDataThread() {
     // Arduino
-    string port_name = portname; // 可以根据实际情况调整
-    int baud_rate = baudrate;       // 可以根据实际情况调整
-    // 创建串口读取对象
+    string port_name = portname;
+    int baud_rate = baudrate;
     SerialReader serialReader(port_name, baud_rate);
 
     // Unmixing Matrix
@@ -215,11 +219,10 @@ void sensorDataThread() {
     constexpr std::array<double, 8> UM4 = {0, -0.01, -0.3, 0.3, 0.25, -0.3, 0.08, -0.05};
 
     // Butterworth filter coefficient
-    std::vector<double> b = {0.0730f,0.0730f};
-    std::vector<double> a = {1.0f, -0.8541f};
+    std::vector<double> b = {0.0378f,0.0378f};
+    std::vector<double> a = {1.0f, -0.9244f};
 
 
-    // 定义动态数组
     std::vector<int> array0, array1, array2, array3, array4, array5, array6, array7;
 
     std::array<double, 8> LC0;
@@ -232,6 +235,7 @@ void sensorDataThread() {
 
     try
     {
+        // Calculate Matrix of LC0, Initializes sensor data
         while (true) {
             vector<int> values = serialReader.readLineAsIntArray();
             int64_t current_t = GetTickUs();
@@ -239,7 +243,6 @@ void sensorDataThread() {
             while ((current_t - initial_time)/MicrosecondToSeconds > 1.0 && (current_t - initial_time)/MicrosecondToSeconds < 3.0) {
                 values = serialReader.readLineAsIntArray();
 
-                // 根据 values 更新每个动态数组
                 if (values.size() >= 1) array0.push_back(values[0]);
                 if (values.size() >= 2) array1.push_back(values[1]);
                 if (values.size() >= 3) array2.push_back(values[2]);
@@ -262,7 +265,7 @@ void sensorDataThread() {
                 double A6 = serialReader.calculateAverage(array6);
                 double A7 = serialReader.calculateAverage(array7);
 
-                // 输出平均值
+                // Print Initializes sensor data
                 cout << "Averages:" << endl;
                 cout << "A0: " << A0 << endl;
                 cout << "A1: " << A1 << endl;
@@ -286,7 +289,7 @@ void sensorDataThread() {
 
         std::vector<int> values = serialReader.readLineAsIntArray();
 
-        // 初始化存储每个传感器的窗口
+        // Filter Setting, Windows
         std::vector<std::deque<double>> x_windows(values.size());
         std::vector<std::deque<double>> y_windows(values.size());
 
@@ -300,9 +303,21 @@ void sensorDataThread() {
             }
         }
 
+        int iteration_num_FC = 1;
+        string filename = R"(F:\Imperial College London\FYP_Data\VelocityMapping\testforFC.txt)";
+        ofstream dataFile;
+        dataFile.open(filename);
+
+        initial_time = GetTickUs();
+
+        int64_t current_t = GetTickUs();
 
         while (true) {
             values = serialReader.readLineAsIntArray();
+
+            current_t = GetTickUs();
+            dataFile << "Total Running time for iteration " << iteration_num_FC << " is: " << (current_t - initial_time) / MicrosecondToSeconds << endl;
+
 
             for (int i = 0; i < values.size(); i++) {
                 // 添加新值到输入信号窗口
@@ -320,6 +335,7 @@ void sensorDataThread() {
                 if (y_windows[i].size() >= a.size()) {
                     y_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
                 }
+
                 LC[i] = y_filtered;
             }
             std::vector<double> LC_zscore(LC.size());
@@ -365,6 +381,14 @@ void sensorDataThread() {
                 }
                 z3_pre = new_z;  // 如果差别不超过 0.02，当前值等于前一次的值
             }
+
+            dataFile << "X position is " << y << "; ";
+            dataFile << "Y position is " << x << "; ";
+            dataFile << "Z position is " << z << "; ";
+
+            dataFile << endl;
+
+            iteration_num_FC++;
         }
     }
     catch (std::exception& e)
@@ -476,7 +500,17 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
         bool local_positionisupdate = false;
 
+        string filename = R"(F:\Imperial College London\FYP_Data\VelocityMapping\testforPosition.txt)";
+        ofstream dataFile;
+        dataFile.open(filename);
+        int iteration_number = 1;
 
+        Eigen::Matrix<double, 6, 7> jacobian_matrix_temp;
+        Eigen::Matrix<double, 7, 1> Joint_Velocity;
+        Eigen::Matrix<double, 6, 1> Endeff_Velocity;
+
+
+        std::vector<float> Command_temp= {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
         while (true) {
 
             {
@@ -600,12 +634,23 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     now = abs(GetTickUs());
                 }
 
+                dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;     // 写入数据
+
                 temp = now;
+
                 // std::cout << "========================="  << std::endl;
                 for(int i = 0; i < actuator_count; i++)
                 {
                     base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                    dataFile << "Actuator  "<< i+1 << " : " << commands[i] * M_PI / 180.0 << "; ";     // 写入数据
+
+                    Command_temp[i] = commands[i] * M_PI / 180.0;
+
+                    Joint_Velocity[i] = base_feedback.actuators(i).velocity();
                 }
+
+                dataFile << endl;    // 写入数据
+
                 try
                 {
                     base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
@@ -615,6 +660,17 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     timeout++;
                 }
 
+                jacobian_matrix_temp = jacobian.computeJacobian(Command_temp);
+
+                Endeff_Velocity = jacobian_matrix * Joint_Velocity;
+
+                for(int i = 0; i < 6; i++)
+                {
+                    dataFile << "endeffector velocity "<< i+1 << " : " << Endeff_Velocity[i] << "; ";
+                }
+                dataFile << endl;
+
+                iteration_number ++;
                 t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
             }
         }

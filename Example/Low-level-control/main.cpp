@@ -248,9 +248,9 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
 
         // Define Target pose
-        double position_X = 0.6f;
-        double position_Y = -0.2f;
-        double position_Z = 0.6f;
+        double position_X = 0.2f;
+        double position_Y = -0.4f;
+        double position_Z = 0.5f;
 
         double orientationX = M_PI/2.0f;
         double orientationY = M_PI/3.0f;
@@ -277,7 +277,6 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
         // Determine whether the Target pose has an inverse kinematics solution
         bool isConvergedAndWithLimit = ik.solveInverseKinematics(commands_rad, target_pose, 100, 1e-3).is_converged;
-
         // Define the callback function used in Refresh_callback
         auto lambda_fct_callback = [](const Kinova::Api::Error &err, const k_api::BaseCyclic::Feedback data)
         {
@@ -334,9 +333,12 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         int iteration_number = 0;
         int iteration_number_for_calcu = iteration_number;
 
-        string filename = R"(F:\Imperial College London\FYP_Data\test.txt)";
+
+        string filename = R"(F:\Imperial College London\FYP_Data\Point2Point\Target6.txt)";
         ofstream dataFile;
         dataFile.open(filename);
+
+
 
         // Real-time loop
         while((t_running < T) && isConvergedAndWithLimit)
@@ -396,28 +398,46 @@ bool example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     }
 
                     commands[i] = delta_q[i] + commands[i];
+                    // std::cout << "test commands " <<commands[i]<< std::endl;
                 }
 
                 iteration_number_for_calcu ++;
             }
 
-            now = GetTickUs();
-            if(last == 0) {
-                now = abs(now);
-            }
-            if(now - temp > (MicrosecondToSeconds / Frequency))  // Different Frequency
+            now = abs(GetTickUs());
+            // if(last == 0) {
+            //     now = abs(now);
+            // }
+            // std::cout << now <<std::endl;
+            if(abs(now - temp) > (MicrosecondToSeconds / Frequency))  // Different Frequency 1000hz
             {
-                dataFile << "Total Running time for itertaion "<< iteration_number << " is: " << now - temp  << endl;     // 写入数据
-
-                temp = now;
+                dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;     // 写入数据
+                // std::cout << abs(now - temp) <<std::endl;
+                temp = abs(now);
 
                 // Update Actuator position value
                 for(int i = 0; i < actuator_count; i++)
                 {
+                    // std::cout << "test" << std::endl;
                     base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
                     commands_rad[i] = commands[i]*M_PI/180;
-                    dataFile << "Actuator  "<< i+1 << " : " << commands_rad[i] << "; ";     // 写入数据
+
+
+                    // dataFile << "Actuator  "<< i+1 << " : " << commands_rad[i] << "; ";     // 写入数据
                 }
+
+                base_feedback = base_cyclic->RefreshFeedback();
+                std::vector<float> commands_temp;
+                // Initialize each actuator to its current position
+                for(int i = 0; i < actuator_count; i++)
+                {
+                    commands_temp.push_back(base_feedback.actuators(i).position());
+                    // 读取每个actuator的位置信息-Degree
+                    dataFile << "Actuator  "<< i+1 << " : " << commands_temp[i] * M_PI / 180.0 << "; ";     // 写入数据
+
+
+                }
+
                 dataFile << endl;;     // 写入数据
 
                 try

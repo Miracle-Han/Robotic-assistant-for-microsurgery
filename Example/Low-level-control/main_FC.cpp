@@ -201,6 +201,8 @@ double z;
 bool sensor_position_update = false;
 bool LC0_ready = false;
 
+bool initial_finish = false;
+
 void sensorDataThread() {
     // Arduino
     string port_name = portname; // 可以根据实际情况调整
@@ -215,8 +217,8 @@ void sensorDataThread() {
     constexpr std::array<double, 8> UM4 = {0, -0.01, -0.3, 0.3, 0.25, -0.3, 0.08, -0.05};
 
     // Butterworth filter coefficient
-    std::vector<double> b = {0.0730f,0.0730f};
-    std::vector<double> a = {1.0f, -0.8541f};
+    std::vector<double> b = {0.0378f,0.0378f};
+    std::vector<double> a = {1.0f, -0.9244f};
 
 
     // 定义动态数组
@@ -300,8 +302,21 @@ void sensorDataThread() {
             }
         }
 
+        {
+            std::lock_guard<std::mutex> lock(data_mutex);
+            initial_finish = true;
+        }
 
-        while (true) {
+        int iteration_num_FC = 1;
+        string filename = R"(F:\Imperial College London\FYP_Data\PositionMapping\testforFC.txt)";
+        ofstream dataFile;
+        dataFile.open(filename);
+
+        initial_time = GetTickUs();
+        int64_t current_t = GetTickUs();
+
+
+        while (initial_finish) {
             values = serialReader.readLineAsIntArray();
 
             for (int i = 0; i < values.size(); i++) {
@@ -320,6 +335,11 @@ void sensorDataThread() {
                 if (y_windows[i].size() >= a.size()) {
                     y_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
                 }
+
+                // dataFile << "Sensor " << i << " is " << values[i] << "; ";
+                // dataFile << "Filtered Sensor " << i << " is " << y_filtered << "; ";
+                // dataFile << endl;
+
                 LC[i] = y_filtered;
             }
             std::vector<double> LC_zscore(LC.size());
@@ -365,6 +385,15 @@ void sensorDataThread() {
                 }
                 z3_pre = new_z;  // 如果差别不超过 0.02，当前值等于前一次的值
             }
+            current_t = GetTickUs();
+            dataFile << "Total Running time for iteration " << iteration_num_FC << " is: " << (current_t - initial_time) / MicrosecondToSeconds << endl;
+
+            dataFile << "X position is " << y << "; ";
+            dataFile << "Y position is " << x << "; ";
+            dataFile << "Z position is " << z << "; ";
+            dataFile << endl;
+
+            iteration_num_FC++;
         }
     }
     catch (std::exception& e)
@@ -475,6 +504,24 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         double delta_t;
 
         bool local_positionisupdate = false;
+
+
+        string filename = R"(F:\Imperial College London\FYP_Data\PositionMapping\testforPosition.txt)";
+        ofstream dataFile;
+        dataFile.open(filename);
+        int iteration_number = 1;
+        bool initial_finish_local = false;
+
+        while(true) {
+            {
+                std::lock_guard<std::mutex> lock(data_mutex);
+                initial_finish_local = initial_finish;
+            }
+
+            if(initial_finish_local) {
+                break;
+            }
+        }
 
 
         // 进入实时控制
@@ -617,9 +664,6 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     if(!ik.solveInverseKinematics(commands_rad, fk.computeForwardKinematics(Target_Actuator_value), 100, 1e-4).is_converged) {
                         break;
                     }
-
-                    // std::cout << "test3333333333333333" << std::endl;
-                    //
                     now = abs(GetTickUs());
 
                     while(abs(now - temp) < (MicrosecondToSeconds / Frequency)) {
@@ -630,6 +674,8 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     // std::cout << "X Target Position: " << x_position << std::endl;
                     // std::cout << "X Current Position: " << current_FK(0,3)<< std::endl;
 
+                    dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;     // 写入数据
+
                     temp = now;
 
                     // std::cout << "test44444444444444" << std::endl;
@@ -637,9 +683,11 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     for(int i = 0; i < actuator_count; i++)
                     {
                         base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                        dataFile << "Actuator  "<< i+1 << " : " << commands[i] * M_PI / 180.0 << "; ";     // 写入数据
                     }
-                    //
-                    // std::cout << "test555555555555" << std::endl;
+
+                    dataFile << endl;;     // 写入数据
+
                     try
                     {
                         base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
@@ -648,56 +696,39 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     {
                         timeout++;
                     }
-                    // std::cout << "test666666666666" << std::endl;
-
-                    // now = abs(GetTickUs());
-                    // if(abs(now - temp) > (MicrosecondToSeconds / Frequency))  // Different Frequency 1000hz
-                    // {
-                    //     // std::cout << abs(now - temp) <<std::endl;
-                    //     temp = abs(now);
-                    //
-                    //     // Update Actuator position value
-                    //     for(int i = 0; i < actuator_count; i++)
-                    //     {
-                    //         if(i == actuator_count - 1)
-                    //         {
-                    //             commands[i] += (0.001f * velocity);
-                    //             base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
-                    //         }
-                    //     }
-                    //
-                    //     try
-                    //     {
-                    //         base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
-                    //     }
-                    //     catch(...)
-                    //     {
-                    //         timeout++;
-                    //     }
-                    // }
+                    iteration_number ++;
                     t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
                 }
             }else {
                 now = abs(GetTickUs());
-                if(abs(now - temp) > (MicrosecondToSeconds / Frequency))  // Different Frequency 1000hz
-                {
-                    temp = abs(now);
 
-                    // Update Actuator position value
-                    for(int i = 0; i < actuator_count; i++)
-                    {
-                        // std::cout << "test" << std::endl;
-                        base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
-                    }
-                    try
-                    {
-                        base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
-                    }
-                    catch(...)
-                    {
-                        timeout++;
-                    }
+                while(abs(now - temp) < (MicrosecondToSeconds / Frequency)) {
+                    now = abs(GetTickUs());
                 }
+
+                dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;
+                temp = abs(now);
+
+                // Update Actuator position value
+                for(int i = 0; i < actuator_count; i++)
+                {
+                    // std::cout << "test" << std::endl;
+                    base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
+                    dataFile << "Actuator  "<< i+1 << " : " << commands[i] * M_PI / 180.0 << "; ";     // 写入数据
+                }
+
+                dataFile << endl;;     // 写入数据
+
+                try
+                {
+                    base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
+                }
+                catch(...)
+                {
+                    timeout++;
+                }
+
+                iteration_number ++;
             }
 
         }
