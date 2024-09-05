@@ -70,13 +70,12 @@ namespace k_api = Kinova::Api;
 // Foot Control Setting
 #define portname "COM11"
 #define baudrate 460800
-#define alpha 0.3       // for low-level filter
 #define gamma 0.02     // Position Mapping coefficient
 
 float velocity = 20.0f;         // Default velocity of the actuator (degrees per seconds)
 float time_duration = DURATION; // Duration of the example (seconds)
 double MicrosecondToSeconds = 1000000.0f;  // Unit conversion, microseconds to seconds
-int Frequency = 1000;           // Hz
+int Frequency = 1000;           // Low-Level Control Frequency (Hz)
 
 
 
@@ -180,7 +179,10 @@ void example_move_to_home_position(k_api::Base::BaseClient* base)
     }
 }
 
-
+/*********************************************
+ * First Order Low-Pass Filter: butterworth_filter *
+ * Cut-Off Frequency: 1.5Hz;  Sampling Frequency: 120Hz
+ ********************************************/
 double butterworth_filter(const std::vector<double>& b, const std::vector<double>& a, std::deque<double>& x, std::deque<double>& y) {
     double output = b[0] * x.back();
     for (size_t i = 1; i < b.size(); ++i) {
@@ -205,9 +207,8 @@ bool initial_finish = false;
 
 void sensorDataThread() {
     // Arduino
-    string port_name = portname; // 可以根据实际情况调整
-    int baud_rate = baudrate;       // 可以根据实际情况调整
-    // 创建串口读取对象
+    string port_name = portname;
+    int baud_rate = baudrate;
     SerialReader serialReader(port_name, baud_rate);
 
     // Unmixing Matrix
@@ -221,7 +222,6 @@ void sensorDataThread() {
     std::vector<double> a = {1.0f, -0.9244f};
 
 
-    // 定义动态数组
     std::vector<int> array0, array1, array2, array3, array4, array5, array6, array7;
 
     std::array<double, 8> LC0;
@@ -234,6 +234,7 @@ void sensorDataThread() {
 
     try
     {
+        // Calculate Matrix of LC0, Initializes sensor data
         while (true) {
             vector<int> values = serialReader.readLineAsIntArray();
             int64_t current_t = GetTickUs();
@@ -241,7 +242,6 @@ void sensorDataThread() {
             while ((current_t - initial_time)/MicrosecondToSeconds > 1.0 && (current_t - initial_time)/MicrosecondToSeconds < 3.0) {
                 values = serialReader.readLineAsIntArray();
 
-                // 根据 values 更新每个动态数组
                 if (values.size() >= 1) array0.push_back(values[0]);
                 if (values.size() >= 2) array1.push_back(values[1]);
                 if (values.size() >= 3) array2.push_back(values[2]);
@@ -264,7 +264,7 @@ void sensorDataThread() {
                 double A6 = serialReader.calculateAverage(array6);
                 double A7 = serialReader.calculateAverage(array7);
 
-                // 输出平均值
+                // Print Initializes sensor data
                 cout << "Averages:" << endl;
                 cout << "A0: " << A0 << endl;
                 cout << "A1: " << A1 << endl;
@@ -288,7 +288,7 @@ void sensorDataThread() {
 
         std::vector<int> values = serialReader.readLineAsIntArray();
 
-        // 初始化存储每个传感器的窗口
+        // Filter Setting, Windows
         std::vector<std::deque<double>> x_windows(values.size());
         std::vector<std::deque<double>> y_windows(values.size());
 
@@ -307,38 +307,28 @@ void sensorDataThread() {
             initial_finish = true;
         }
 
-        int iteration_num_FC = 1;
-        string filename = R"(F:\Imperial College London\FYP_Data\PositionMapping\testforFC.txt)";
-        ofstream dataFile;
-        dataFile.open(filename);
 
-        initial_time = GetTickUs();
-        int64_t current_t = GetTickUs();
-
-
+        // Real-time Control, read sensor data in real-time
         while (initial_finish) {
             values = serialReader.readLineAsIntArray();
 
             for (int i = 0; i < values.size(); i++) {
-                // 添加新值到输入信号窗口
+
+                // Deassign
                 x_windows[i].push_back(static_cast<double>(values[i]));
                 if (x_windows[i].size() >= b.size()) {
                     x_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
                 }
 
-                // 应用巴特沃斯滤波器
+                // Apply Filter
                 double y_filtered = butterworth_filter(b, a, x_windows[i], y_windows[i]);
 
 
-                // 添加到输出信号窗口
+                // Deassign
                 y_windows[i].push_back(y_filtered);
                 if (y_windows[i].size() >= a.size()) {
                     y_windows[i].pop_front(); // 保持窗口大小与滤波器阶数一致
                 }
-
-                // dataFile << "Sensor " << i << " is " << values[i] << "; ";
-                // dataFile << "Filtered Sensor " << i << " is " << y_filtered << "; ";
-                // dataFile << endl;
 
                 LC[i] = y_filtered;
             }
@@ -347,53 +337,45 @@ void sensorDataThread() {
                 LC_zscore[i] = LC[i] - LC0[i];
             }
 
+            // Position = unmixing matrix * (LC - LC0)
             double x33 = -std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM2.begin(), 0.0);
             double y33 = std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM1.begin(), 0.0);
             double z33 = std::inner_product(LC_zscore.begin(), LC_zscore.end(), UM3.begin(), 0.0);
 
-            // 滤波计算
+            // Position-to-Velocity Mapping, multiply it by a coefficient
             double new_x = gamma * x33;
             double new_y = gamma * y33;
             double new_z = gamma * z33;
 
-            // 判断当前 x 的值与前一次的值差别是否不超过 0.02
+            // Same like filter, avoid small change of values, to avoid Jerk
             if (std::abs(new_x - x3_pre) >= 0.02) {
                 {
                     std::lock_guard<std::mutex> lock(data_mutex);
                     x = new_x;
                     sensor_position_update = true;
                 }
-                x3_pre = new_x;  // 如果差别不超过 0.02，当前值等于前一次的值
+                x3_pre = new_x;
             }
 
-            // 判断当前 y 的值与前一次的值差别是否不超过 0.02
+            // Same like filter, avoid small change of values, to avoid Jerk
             if (std::abs(new_y - y3_pre) >= 0.02) {
                 {
                     std::lock_guard<std::mutex> lock(data_mutex);
                     y = new_y;
                     sensor_position_update = true;
                 }
-                y3_pre = new_y;  // 如果差别不超过 0.02，当前值等于前一次的值
+                y3_pre = new_y;
             }
 
-            // 判断当前 x 的值与前一次的值差别是否不超过 0.02
+            // Same like filter, avoid small change of values, to avoid Jerk
             if (std::abs(new_z - z3_pre) >= 0.02) {
                 {
                     std::lock_guard<std::mutex> lock(data_mutex);
                     z = new_z;
                     sensor_position_update = true;
                 }
-                z3_pre = new_z;  // 如果差别不超过 0.02，当前值等于前一次的值
+                z3_pre = new_z;
             }
-            current_t = GetTickUs();
-            dataFile << "Total Running time for iteration " << iteration_num_FC << " is: " << (current_t - initial_time) / MicrosecondToSeconds << endl;
-
-            dataFile << "X position is " << y << "; ";
-            dataFile << "Y position is " << x << "; ";
-            dataFile << "Z position is " << z << "; ";
-            dataFile << endl;
-
-            iteration_num_FC++;
         }
     }
     catch (std::exception& e)
@@ -445,7 +427,7 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
 
 
 
-    //
+    // Constant velocity of each-axis of end-effector
     double x_velocity = 0.5f;
     double y_velocity = 0.5f;
     double z_velocity = 0.5f;
@@ -474,15 +456,15 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         {
             commands[i] = base_feedback.actuators(i).position();
             base_command.add_actuators()->set_position(base_feedback.actuators(i).position());
-            std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
+            // std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
         }
         // degree to radian
         for (int i = 0; i < actuator_count; i++) {
             commands_rad[i] = commands[i] * M_PI / 180.0;
         }
 
+        // Current Forward Kinematic
         T_Home_position = fk.computeForwardKinematics(commands_rad);
-
         Target_Rotation = T_Home_position.block<3, 3>(0, 0);
 
         // Define the callback function used in Refresh_callback
@@ -500,18 +482,19 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         int64_t temp = 0;
 
 
+        // dt
         double t_running = (now-initial_time)/MicrosecondToSeconds;
         double delta_t;
 
+
+        // Receive bool value of global variable: sensor_position_update
         bool local_positionisupdate = false;
 
 
-        string filename = R"(F:\Imperial College London\FYP_Data\PositionMapping\testforPosition.txt)";
-        ofstream dataFile;
-        dataFile.open(filename);
-        int iteration_number = 1;
         bool initial_finish_local = false;
 
+
+        // Protection, The Foot interface takes time to initialize. After the initialization is complete, the next step is taken
         while(true) {
             {
                 std::lock_guard<std::mutex> lock(data_mutex);
@@ -524,14 +507,17 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
         }
 
 
-        // 进入实时控制
+        // Real-time Control loop for receive update foot interface position
         while (true) {
+
+            // Mutex
             {
                 std::lock_guard<std::mutex> lock(data_mutex);
                 local_positionisupdate = sensor_position_update;
                 sensor_position_update = false;
             }
 
+            // when foot interface position update, deassign value of position of end-effector
             if(local_positionisupdate) {
                 local_positionisupdate = false;
 
@@ -543,6 +529,7 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     // base_command.add_actuators()->set_position(base_feedback.actuators(i).position());
                     // std::cout << "Actuator"<< i << ": " << commands[i] << std::endl;
                 }
+
                 // degree to radian
                 for (int i = 0; i < actuator_count; i++) {
                     commands_rad[i] = commands[i] * M_PI / 180.0;
@@ -561,9 +548,8 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                 t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
 
 
+                // Real-time Control loop for send commands to Actuator
                 while(abs(current_FK(0,3)-x_position)>=0.001 || abs(current_FK(1,3)-y_position)>=0.001 || abs(current_FK(2,3)-z_position)>=0.001) {
-
-                    // std::cout << "Running time is : " << t_running <<std::endl;
 
                     {
                         std::lock_guard<std::mutex> lock(data_mutex);
@@ -585,7 +571,8 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     for (int i = 0; i < actuator_count; i++) {
                         commands_rad[i] = commands[i] * M_PI / 180.0;
                     }
-                    //
+
+
                     current_FK = fk.computeForwardKinematics(commands_rad);
                     current_Rotation = current_FK.block<3, 3>(0, 0);
 
@@ -594,10 +581,11 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     rotation_error = rotation_error_angle_axis.angle() * rotation_error_angle_axis.axis();
 
 
-                    //
+
                     jacobian_matrix = jacobian.computeJacobian(commands_rad);
                     pseudo_inverse_jacobian_matrix = jacobian.computePseudoInverse(jacobian_matrix);
-                    //
+
+
                     delta_t = (GetTickUs()-initial_time)/MicrosecondToSeconds - t_running;
 
                     // std::cout << "delta_t is : " <<delta_t <<std::endl;
@@ -635,14 +623,12 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                         error(2) = 0.0f;
                     }
 
-                    //
-
-                    // std::cout << "Z-position error: " << T_Home_position(2,3) - current_FK(2,3)<< std::endl;
 
                     error(3) = rotation_error(0,0);
                     error(4) = rotation_error(1,0);
                     error(5) = rotation_error(2,0);
 
+                    // Joint Increasement
                     delta_q = pseudo_inverse_jacobian_matrix * (error);
 
                     for(int i = 0; i < actuator_count; i++)
@@ -661,6 +647,8 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                         Target_Actuator_value[i] = commands[i] * M_PI / 180.0;
                     }
 
+
+                    // if out of physical limition, then stop and break out of "Real-time Control loop for send commands to Actuator"
                     if(!ik.solveInverseKinematics(commands_rad, fk.computeForwardKinematics(Target_Actuator_value), 100, 1e-4).is_converged) {
                         break;
                     }
@@ -670,24 +658,13 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                         now = abs(GetTickUs());
                     }
 
-                    // std::cout << "================================"<< std::endl;
-                    // std::cout << "X Target Position: " << x_position << std::endl;
-                    // std::cout << "X Current Position: " << current_FK(0,3)<< std::endl;
-
-                    dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;     // 写入数据
-
                     temp = now;
 
-                    // std::cout << "test44444444444444" << std::endl;
                     // Update Actuator position value
                     for(int i = 0; i < actuator_count; i++)
                     {
                         base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
-                        dataFile << "Actuator  "<< i+1 << " : " << commands[i] * M_PI / 180.0 << "; ";     // 写入数据
                     }
-
-                    dataFile << endl;;     // 写入数据
-
                     try
                     {
                         base_cyclic->Refresh_callback(base_command, lambda_fct_callback, 0);
@@ -696,17 +673,15 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                     {
                         timeout++;
                     }
-                    iteration_number ++;
                     t_running = (GetTickUs()-initial_time)/MicrosecondToSeconds;
                 }
-            }else {
+            }else {  // if no new foot interface position be updated, and already move to the target, then will running this code, stop moving in current position
                 now = abs(GetTickUs());
 
                 while(abs(now - temp) < (MicrosecondToSeconds / Frequency)) {
                     now = abs(GetTickUs());
                 }
 
-                dataFile << "Total Running time for iteration "<< iteration_number << " is: " << now - temp  << endl;
                 temp = abs(now);
 
                 // Update Actuator position value
@@ -714,10 +689,7 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                 {
                     // std::cout << "test" << std::endl;
                     base_command.mutable_actuators(i)->set_position(fmod(commands[i], 360.0f));
-                    dataFile << "Actuator  "<< i+1 << " : " << commands[i] * M_PI / 180.0 << "; ";     // 写入数据
                 }
-
-                dataFile << endl;;     // 写入数据
 
                 try
                 {
@@ -727,8 +699,6 @@ void example_actuator_low_level_velocity_control(k_api::Base::BaseClient* base, 
                 {
                     timeout++;
                 }
-
-                iteration_number ++;
             }
 
         }
