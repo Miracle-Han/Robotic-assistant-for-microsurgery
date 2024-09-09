@@ -1,0 +1,88 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-1ac8842761268d89e1c0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Kinematic",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Control::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Control-Debug-50ab47dd1b3ad7edab12.json",
+					"name" : "Control",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ForwardKinematic::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ForwardKinematic-Debug-1876a5ae3f0fcbd81d7a.json",
+					"name" : "ForwardKinematic",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Kinematic_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Kinematic_uninstall-Debug-d5d2a43e64170bea9de8.json",
+					"name" : "Kinematic_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-Debug-07edef770709e7b4765c.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/miracle/ws_moveit/src/Kinematic/build",
+		"source" : "/home/miracle/ws_moveit/src/Kinematic"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

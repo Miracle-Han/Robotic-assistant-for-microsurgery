@@ -1,0 +1,11 @@
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/uninstall.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/Kinematic_uninstall.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/ForwardKinematic.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/Control.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/test.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/edit_cache.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/rebuild_cache.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/list_install_components.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/install.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/install/local.dir
+/home/miracle/ws_moveit/src/Kinematic/build/CMakeFiles/install/strip.dir
