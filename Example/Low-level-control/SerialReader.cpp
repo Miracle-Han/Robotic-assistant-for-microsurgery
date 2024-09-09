@@ -7,7 +7,7 @@
 
 SerialReader::SerialReader(const string& port_name, int baud_rate)
     : io(), serial(io, port_name) {
-    // 设置串口参数
+    // Setting serial port parameters
     serial.set_option(serial_port_base::baud_rate(baud_rate));
     serial.set_option(serial_port_base::character_size(8));
     serial.set_option(serial_port_base::parity(serial_port_base::parity::none));
@@ -20,18 +20,17 @@ vector<int> SerialReader::readLineAsIntArray() {
 
     while (true) {
         char c;
-        // 从串口读取一个字符
+        // Read a character from the serial port
         boost::asio::read(serial, buffer(&c, 1), ec);
 
-        // 如果读取出错，打印错误信息并返回默认数组
         if (ec) {
             cerr << "Read error: " << ec.message() << endl;
-            return vector<int>(8, 0); // 返回一个填充了0的默认数组
+            return vector<int>(8, 0);
         }
 
-        // 如果读取到换行符，解析当前行并返回结果
+        // If a newline is read, the current line is parsed and the result is returned
         if (c == '\n') {
-            return splitStringToIntArray(line); // 返回解析后的整数数组
+            return splitStringToIntArray(line);
         } else {
             line += c;
         }
@@ -39,7 +38,7 @@ vector<int> SerialReader::readLineAsIntArray() {
 }
 
 vector<int> SerialReader::splitStringToIntArray(const string& str) {
-    vector<int> tokens(8, 0);  // 初始化为 8 个 0
+    vector<int> tokens(8, 0);
     stringstream ss(str);
     string token;
     int index = 0;
@@ -47,7 +46,7 @@ vector<int> SerialReader::splitStringToIntArray(const string& str) {
     while (getline(ss, token, ' ') && index < 8) {
         if (!token.empty()) {
             try {
-                // 将字符串转换为整数并存储到数组中
+                // Converts a string to an integer and stores it in an array
                 tokens[index] = stoi(token);
                 index++;
             } catch (const invalid_argument& e) {
@@ -61,7 +60,7 @@ vector<int> SerialReader::splitStringToIntArray(const string& str) {
     return tokens;
 }
 
-// 计算数组平均值的函数
+// calculates the average value of an array
 double SerialReader::calculateAverage(const vector<int>& array) {
     if (array.empty()) return 0.0;
     double sum = accumulate(array.begin(), array.end(), 0);
