@@ -24,13 +24,12 @@ Eigen::MatrixXd Jacobian::computeJacobian(const std::vector<float>& joint_angles
     if (joint_angles.size() != 7) {
         throw std::invalid_argument("Exactly 7 joint angles are required");
     } else {
-        // 记录传输进来的joint value
         float joint_values[7];
         for (size_t i = 0; i < 7; ++i) {
             joint_values[i] = joint_angles[i];
         }
 
-        // 定义 DH 矩阵
+        // Define DH Matrix
         std::vector<std::vector<float>> DH_params = {
             {M_PI / 2, 0.0, D1, joint_values[0]},
             {M_PI / 2, 0.0, D2, joint_values[1] + M_PI},
@@ -41,21 +40,21 @@ Eigen::MatrixXd Jacobian::computeJacobian(const std::vector<float>& joint_angles
             {M_PI, 0.0, D7, joint_values[6] + M_PI}
         };
 
-        // 初始化变换矩阵
+        // Initialize the transformation matrix
         Eigen::Matrix4d T0_n = Eigen::Matrix4d::Identity();
         T0_n(1, 1) = -1;
         T0_n(2, 2) = -1;
 
         int num_joints = 7;
 
-        // 初始化位置和Z轴向量
+        // Initializes the position and Z-axis vector
         Eigen::MatrixXd positions(3, num_joints + 1);
         Eigen::MatrixXd z_vectors(3, num_joints + 1);
         positions.setZero();
         z_vectors.setZero();
         z_vectors.col(0) = T0_n.block<3, 1>(0, 2);  // 基坐标系的Z轴
 
-        // 计算位置和Z轴向量
+        // Calculate the position and z-axis vector
         for (int i = 0; i < num_joints; ++i) {
             float alpha = DH_params[i][0];
             float a = DH_params[i][1];
@@ -69,19 +68,16 @@ Eigen::MatrixXd Jacobian::computeJacobian(const std::vector<float>& joint_angles
             z_vectors.col(i + 1) = T0_n.block<3, 1>(0, 2);
         }
 
-        // 计算Jacobian矩阵
+        // Computes Jacobian matrices
         for (int i = 0; i < num_joints; ++i) {
-            // 计算叉乘的每一个分量
             float cross_x = z_vectors(1, i) * (positions(2, num_joints) - positions(2, i)) - z_vectors(2, i) * (positions(1, num_joints) - positions(1, i));
             float cross_y = z_vectors(2, i) * (positions(0, num_joints) - positions(0, i)) - z_vectors(0, i) * (positions(2, num_joints) - positions(2, i));
             float cross_z = z_vectors(0, i) * (positions(1, num_joints) - positions(1, i)) - z_vectors(1, i) * (positions(0, num_joints) - positions(0, i));
 
-            // 更新雅可比矩阵的上半部分
             Jacobian_matrix(0, i) = cross_x;
             Jacobian_matrix(1, i) = cross_y;
             Jacobian_matrix(2, i) = cross_z;
 
-            // 更新雅可比矩阵的下半部分
             Jacobian_matrix(3, i) = z_vectors(0, i);
             Jacobian_matrix(4, i) = z_vectors(1, i);
             Jacobian_matrix(5, i) = z_vectors(2, i);
