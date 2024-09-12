@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_Example: phony || CMakeFiles\Example.dir
 build CMakeFiles\Example.dir\utilities.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\utilities.cpp || cmake_object_order_depends_target_Example
   DEFINES = -DNOMINMAX -D_OS_WINDOWS
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
-  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
   OBJECT_DIR = CMakeFiles\Example.dir
   OBJECT_FILE_DIR = CMakeFiles\Example.dir
   TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
@@ -61,7 +61,7 @@ build CMakeFiles\Example.dir\utilities.cpp.obj: CXX_COMPILER__Example_unscanned_
 build CMakeFiles\Example.dir\Low-level-control\main.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\main.cpp || cmake_object_order_depends_target_Example
   DEFINES = -DNOMINMAX -D_OS_WINDOWS
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
-  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
   OBJECT_DIR = CMakeFiles\Example.dir
   OBJECT_FILE_DIR = CMakeFiles\Example.dir\Low-level-control
   TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
@@ -70,7 +70,7 @@ build CMakeFiles\Example.dir\Low-level-control\main.cpp.obj: CXX_COMPILER__Examp
 build CMakeFiles\Example.dir\Low-level-control\Jacobian.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Jacobian.cpp || cmake_object_order_depends_target_Example
   DEFINES = -DNOMINMAX -D_OS_WINDOWS
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
-  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
   OBJECT_DIR = CMakeFiles\Example.dir
   OBJECT_FILE_DIR = CMakeFiles\Example.dir\Low-level-control
   TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
@@ -79,7 +79,43 @@ build CMakeFiles\Example.dir\Low-level-control\Jacobian.cpp.obj: CXX_COMPILER__E
 build CMakeFiles\Example.dir\Low-level-control\Trajectory.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Trajectory.cpp || cmake_object_order_depends_target_Example
   DEFINES = -DNOMINMAX -D_OS_WINDOWS
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
-  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\Example.dir
+  OBJECT_FILE_DIR = CMakeFiles\Example.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
+  TARGET_PDB = Example.pdb
+
+build CMakeFiles\Example.dir\Low-level-control\ForwardKinematic.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\ForwardKinematic.cpp || cmake_object_order_depends_target_Example
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\Example.dir
+  OBJECT_FILE_DIR = CMakeFiles\Example.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
+  TARGET_PDB = Example.pdb
+
+build CMakeFiles\Example.dir\Low-level-control\Constants.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Constants.cpp || cmake_object_order_depends_target_Example
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\Example.dir
+  OBJECT_FILE_DIR = CMakeFiles\Example.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
+  TARGET_PDB = Example.pdb
+
+build CMakeFiles\Example.dir\Low-level-control\InverseKinematic.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\InverseKinematic.cpp || cmake_object_order_depends_target_Example
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\Example.dir
+  OBJECT_FILE_DIR = CMakeFiles\Example.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
+  TARGET_PDB = Example.pdb
+
+build CMakeFiles\Example.dir\Low-level-control\SerialReader.cpp.obj: CXX_COMPILER__Example_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\SerialReader.cpp || cmake_object_order_depends_target_Example
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
   OBJECT_DIR = CMakeFiles\Example.dir
   OBJECT_FILE_DIR = CMakeFiles\Example.dir\Low-level-control
   TARGET_COMPILE_PDB = CMakeFiles\Example.dir\
@@ -93,7 +129,7 @@ build CMakeFiles\Example.dir\Low-level-control\Trajectory.cpp.obj: CXX_COMPILER_
 #############################################
 # Link the executable Example.exe
 
-build Example.exe: CXX_EXECUTABLE_LINKER__Example_Release CMakeFiles\Example.dir\utilities.cpp.obj CMakeFiles\Example.dir\Low-level-control\main.cpp.obj CMakeFiles\Example.dir\Low-level-control\Jacobian.cpp.obj CMakeFiles\Example.dir\Low-level-control\Trajectory.cpp.obj | C$:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib
+build Example.exe: CXX_EXECUTABLE_LINKER__Example_Release CMakeFiles\Example.dir\utilities.cpp.obj CMakeFiles\Example.dir\Low-level-control\main.cpp.obj CMakeFiles\Example.dir\Low-level-control\Jacobian.cpp.obj CMakeFiles\Example.dir\Low-level-control\Trajectory.cpp.obj CMakeFiles\Example.dir\Low-level-control\ForwardKinematic.cpp.obj CMakeFiles\Example.dir\Low-level-control\Constants.cpp.obj CMakeFiles\Example.dir\Low-level-control\InverseKinematic.cpp.obj CMakeFiles\Example.dir\Low-level-control\SerialReader.cpp.obj | C$:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
   LINK_LIBRARIES = C:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib  winMM.lib  ws2_32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
@@ -104,6 +140,309 @@ build Example.exe: CXX_EXECUTABLE_LINKER__Example_Release CMakeFiles\Example.dir
   TARGET_FILE = Example.exe
   TARGET_IMPLIB = Example.lib
   TARGET_PDB = Example.pdb
+
+# =============================================================================
+# Object build statements for EXECUTABLE target test
+
+
+#############################################
+# Order-only phony target for test
+
+build cmake_object_order_depends_target_test: phony || CMakeFiles\test.dir
+
+build CMakeFiles\test.dir\utilities.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\utilities.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+build CMakeFiles\test.dir\Low-level-control\test.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\test.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+build CMakeFiles\test.dir\Low-level-control\Jacobian.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Jacobian.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+build CMakeFiles\test.dir\Low-level-control\Trajectory.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Trajectory.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+build CMakeFiles\test.dir\Low-level-control\ForwardKinematic.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\ForwardKinematic.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+build CMakeFiles\test.dir\Low-level-control\Constants.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Constants.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+build CMakeFiles\test.dir\Low-level-control\InverseKinematic.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\InverseKinematic.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+build CMakeFiles\test.dir\Low-level-control\SerialReader.cpp.obj: CXX_COMPILER__test_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\SerialReader.cpp || cmake_object_order_depends_target_test
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\test.dir
+  OBJECT_FILE_DIR = CMakeFiles\test.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_PDB = test.pdb
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target test
+
+
+#############################################
+# Link the executable test.exe
+
+build test.exe: CXX_EXECUTABLE_LINKER__test_Release CMakeFiles\test.dir\utilities.cpp.obj CMakeFiles\test.dir\Low-level-control\test.cpp.obj CMakeFiles\test.dir\Low-level-control\Jacobian.cpp.obj CMakeFiles\test.dir\Low-level-control\Trajectory.cpp.obj CMakeFiles\test.dir\Low-level-control\ForwardKinematic.cpp.obj CMakeFiles\test.dir\Low-level-control\Constants.cpp.obj CMakeFiles\test.dir\Low-level-control\InverseKinematic.cpp.obj CMakeFiles\test.dir\Low-level-control\SerialReader.cpp.obj | C$:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
+  LINK_LIBRARIES = C:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib  winMM.lib  ws2_32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\test.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\test.dir\
+  TARGET_FILE = test.exe
+  TARGET_IMPLIB = test.lib
+  TARGET_PDB = test.pdb
+
+# =============================================================================
+# Object build statements for EXECUTABLE target main_FC
+
+
+#############################################
+# Order-only phony target for main_FC
+
+build cmake_object_order_depends_target_main_FC: phony || CMakeFiles\main_FC.dir
+
+build CMakeFiles\main_FC.dir\utilities.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\utilities.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+build CMakeFiles\main_FC.dir\Low-level-control\main_FC.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\main_FC.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+build CMakeFiles\main_FC.dir\Low-level-control\Jacobian.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Jacobian.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+build CMakeFiles\main_FC.dir\Low-level-control\Trajectory.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Trajectory.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+build CMakeFiles\main_FC.dir\Low-level-control\ForwardKinematic.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\ForwardKinematic.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+build CMakeFiles\main_FC.dir\Low-level-control\Constants.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Constants.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+build CMakeFiles\main_FC.dir\Low-level-control\InverseKinematic.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\InverseKinematic.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+build CMakeFiles\main_FC.dir\Low-level-control\SerialReader.cpp.obj: CXX_COMPILER__main_FC_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\SerialReader.cpp || cmake_object_order_depends_target_main_FC
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_PDB = main_FC.pdb
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target main_FC
+
+
+#############################################
+# Link the executable main_FC.exe
+
+build main_FC.exe: CXX_EXECUTABLE_LINKER__main_FC_Release CMakeFiles\main_FC.dir\utilities.cpp.obj CMakeFiles\main_FC.dir\Low-level-control\main_FC.cpp.obj CMakeFiles\main_FC.dir\Low-level-control\Jacobian.cpp.obj CMakeFiles\main_FC.dir\Low-level-control\Trajectory.cpp.obj CMakeFiles\main_FC.dir\Low-level-control\ForwardKinematic.cpp.obj CMakeFiles\main_FC.dir\Low-level-control\Constants.cpp.obj CMakeFiles\main_FC.dir\Low-level-control\InverseKinematic.cpp.obj CMakeFiles\main_FC.dir\Low-level-control\SerialReader.cpp.obj | C$:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
+  LINK_LIBRARIES = C:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib  winMM.lib  ws2_32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\main_FC.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC.dir\
+  TARGET_FILE = main_FC.exe
+  TARGET_IMPLIB = main_FC.lib
+  TARGET_PDB = main_FC.pdb
+
+# =============================================================================
+# Object build statements for EXECUTABLE target main_FC_Velocity
+
+
+#############################################
+# Order-only phony target for main_FC_Velocity
+
+build cmake_object_order_depends_target_main_FC_Velocity: phony || CMakeFiles\main_FC_Velocity.dir
+
+build CMakeFiles\main_FC_Velocity.dir\utilities.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\utilities.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+build CMakeFiles\main_FC_Velocity.dir\Low-level-control\main_FC_Velocity.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\main_FC_Velocity.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+build CMakeFiles\main_FC_Velocity.dir\Low-level-control\Jacobian.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Jacobian.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+build CMakeFiles\main_FC_Velocity.dir\Low-level-control\Trajectory.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Trajectory.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+build CMakeFiles\main_FC_Velocity.dir\Low-level-control\ForwardKinematic.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\ForwardKinematic.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+build CMakeFiles\main_FC_Velocity.dir\Low-level-control\Constants.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\Constants.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+build CMakeFiles\main_FC_Velocity.dir\Low-level-control\InverseKinematic.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\InverseKinematic.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+build CMakeFiles\main_FC_Velocity.dir\Low-level-control\SerialReader.cpp.obj: CXX_COMPILER__main_FC_Velocity_unscanned_Release C$:\Users\韩小龙\Desktop\Example\Low-level-control\SerialReader.cpp || cmake_object_order_depends_target_main_FC_Velocity
+  DEFINES = -DNOMINMAX -D_OS_WINDOWS
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG /bigobj
+  INCLUDES = -IC:\Users\韩小龙\Desktop\Example\cmake-build-release-visual-studio -IC:\Users\韩小龙\Desktop\Example -IG:\BootsLibrary\boost_1_85_0\boost_1_85_0 -IC:\Users\韩小龙\Desktop\Example\thirdParty\cxxopts -IG:\eigin\eigen-3.4.0\eigen-3.4.0 -IC:\Users\韩小龙\Desktop\Example\kortex_api\include -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\common -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\messages -IC:\Users\韩小龙\Desktop\Example\kortex_api\include\client_stubs
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  OBJECT_FILE_DIR = CMakeFiles\main_FC_Velocity.dir\Low-level-control
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_PDB = main_FC_Velocity.pdb
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target main_FC_Velocity
+
+
+#############################################
+# Link the executable main_FC_Velocity.exe
+
+build main_FC_Velocity.exe: CXX_EXECUTABLE_LINKER__main_FC_Velocity_Release CMakeFiles\main_FC_Velocity.dir\utilities.cpp.obj CMakeFiles\main_FC_Velocity.dir\Low-level-control\main_FC_Velocity.cpp.obj CMakeFiles\main_FC_Velocity.dir\Low-level-control\Jacobian.cpp.obj CMakeFiles\main_FC_Velocity.dir\Low-level-control\Trajectory.cpp.obj CMakeFiles\main_FC_Velocity.dir\Low-level-control\ForwardKinematic.cpp.obj CMakeFiles\main_FC_Velocity.dir\Low-level-control\Constants.cpp.obj CMakeFiles\main_FC_Velocity.dir\Low-level-control\InverseKinematic.cpp.obj CMakeFiles\main_FC_Velocity.dir\Low-level-control\SerialReader.cpp.obj | C$:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MT /O2 /Ob2 /DNDEBUG
+  LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
+  LINK_LIBRARIES = C:\Users\韩小龙\Desktop\Example\kortex_api\lib\release\KortexApiCpp.lib  winMM.lib  ws2_32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  OBJECT_DIR = CMakeFiles\main_FC_Velocity.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\main_FC_Velocity.dir\
+  TARGET_FILE = main_FC_Velocity.exe
+  TARGET_IMPLIB = main_FC_Velocity.lib
+  TARGET_PDB = main_FC_Velocity.pdb
 
 
 #############################################
@@ -133,6 +472,12 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 
 build Example: phony Example.exe
 
+build main_FC: phony main_FC.exe
+
+build main_FC_Velocity: phony main_FC_Velocity.exe
+
+build test: phony test.exe
+
 # =============================================================================
 # Folder targets.
 
@@ -141,7 +486,7 @@ build Example: phony Example.exe
 #############################################
 # Folder: C:/Users/韩小龙/Desktop/Example/cmake-build-release-visual-studio
 
-build all: phony Example.exe
+build all: phony Example.exe test.exe main_FC.exe main_FC_Velocity.exe
 
 # =============================================================================
 # Built-in targets
@@ -150,14 +495,14 @@ build all: phony Example.exe
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | C$:\Users\韩小龙\Desktop\Example\CMakeLists.txt CMakeCache.txt CMakeFiles\3.28.1\CMakeCCompiler.cmake CMakeFiles\3.28.1\CMakeCXXCompiler.cmake CMakeFiles\3.28.1\CMakeRCCompiler.cmake CMakeFiles\3.28.1\CMakeSystem.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCXXInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCommonLanguageInclude.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeGenericSystem.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeInitializeConfigs.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeLanguageInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeRCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInitialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\CMakeCommonCompilerMacros.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-Initialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\WindowsPaths.cmake
+build build.ninja: RERUN_CMAKE | C$:\Users\韩小龙\Desktop\Example\CMakeLists.txt CMakeCache.txt CMakeFiles\3.28.1\CMakeCCompiler.cmake CMakeFiles\3.28.1\CMakeCXXCompiler.cmake CMakeFiles\3.28.1\CMakeRCCompiler.cmake CMakeFiles\3.28.1\CMakeSystem.cmake G$:\Anaconda\Anaconda\Library\lib\cmake\Boost-1.82.0\BoostConfigVersion.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCXXInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCommonLanguageInclude.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeGenericSystem.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeInitializeConfigs.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeLanguageInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeRCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInitialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\CMakeCommonCompilerMacros.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\FindBoost.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\FindPackageHandleStandardArgs.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\FindPackageMessage.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-Initialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\WindowsPaths.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build C$:\Users\韩小龙\Desktop\Example\CMakeLists.txt CMakeCache.txt CMakeFiles\3.28.1\CMakeCCompiler.cmake CMakeFiles\3.28.1\CMakeCXXCompiler.cmake CMakeFiles\3.28.1\CMakeRCCompiler.cmake CMakeFiles\3.28.1\CMakeSystem.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCXXInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCommonLanguageInclude.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeGenericSystem.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeInitializeConfigs.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeLanguageInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeRCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInitialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\CMakeCommonCompilerMacros.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-Initialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\WindowsPaths.cmake: phony
+build C$:\Users\韩小龙\Desktop\Example\CMakeLists.txt CMakeCache.txt CMakeFiles\3.28.1\CMakeCCompiler.cmake CMakeFiles\3.28.1\CMakeCXXCompiler.cmake CMakeFiles\3.28.1\CMakeRCCompiler.cmake CMakeFiles\3.28.1\CMakeSystem.cmake G$:\Anaconda\Anaconda\Library\lib\cmake\Boost-1.82.0\BoostConfigVersion.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCXXInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeCommonLanguageInclude.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeGenericSystem.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeInitializeConfigs.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeLanguageInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeRCInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInformation.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\CMakeSystemSpecificInitialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\CMakeCommonCompilerMacros.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Compiler\MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\FindBoost.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\FindPackageHandleStandardArgs.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\FindPackageMessage.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-Initialize.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-C.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC-CXX.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows-MSVC.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\Windows.cmake G$:\Clion\CLion$ 2024.1.4\bin\cmake\win\x64\share\cmake-3.28\Modules\Platform\WindowsPaths.cmake: phony
 
 
 #############################################
