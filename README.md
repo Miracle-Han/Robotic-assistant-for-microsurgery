@@ -20,3 +20,6 @@ There are two method to use **"Example"** Code:
 1. Download the [Github project code provided by Kinova](https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L/tree/master), and download the corresponding API package. Then copy the entire "Low-level-control" folder in the **"Example"** folder of this repository to "api_cpp/exampls" in the Kinova project, and configure the CmakeList file in this path. After the configuration is complete, you can run the relevant executable program.
 2. Alternatively, you can download the entire **"Example"** folder and download the corresponding API from the [Github project code provided by Kinova](https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L/tree/master), copy the API to "kortex_api" in **"Example"**, then download the required C++ library in Cmake and configure the CmakeList file. Once completed, you can run the corresponding executable program.
 
+
+## Note
+When you configure CmakeList, you may need to download **Boost** and **Eigen** libraries. After downloading, please modify the directory of these two libraries in CmakeList to the location you downloaded.
